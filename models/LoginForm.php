@@ -26,11 +26,14 @@ class LoginForm extends Model
     public function rules()
     {
         return [
-            // username and password are both required
             [['username', 'password'], 'required'],
-            // rememberMe must be a boolean value
+            [['username'], 'string', 'min' => 4],
+            [['username'], 'string', 'max' => 32],
+            [['password'], 'string', 'min' => 4],
+            [['password'], 'string', 'max' => 255],
+            [['username', 'password'], 'trim'],
+            ['username', 'match', 'pattern' => '/^[a-z]\w*$/i','message' => '{attribute} должен начинаться и содержать символы только латинского алфавита'],
             ['rememberMe', 'boolean'],
-            // password is validated by validatePassword()
             ['password', 'validatePassword'],
         ];
     }
@@ -46,9 +49,8 @@ class LoginForm extends Model
     {
         if (!$this->hasErrors()) {
             $user = $this->getUser();
-
             if (!$user || !$user->validatePassword($this->password)) {
-                $this->addError($attribute, 'Incorrect username or password.');
+                $this->addError($attribute, 'Неправильно имя пользователя или пароль.');
             }
         }
     }

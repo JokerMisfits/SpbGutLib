@@ -1,0 +1,74 @@
+<?php
+
+use yii\helpers\Html;
+use yii\widgets\DetailView;
+use yii\helpers\Url;
+
+/* @var $this yii\web\View */
+/* @var $model app\modules\admin\models\BooksHistory */
+/* @var $book */
+
+$this->title = $book;
+$this->params['breadcrumbs'][] = ['label' => 'Books Histories', 'url' => ['index']];
+$this->params['breadcrumbs'][] = $this->title;
+\yii\web\YiiAsset::register($this);
+?>
+<div class="books-history-view">
+
+    <h1><?= Html::encode($this->title) ?></h1>
+
+    <p>
+        <?= Html::a('Редактировать данные', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+        <?= Html::a('Удалить запись', ['delete', 'id' => $model->id], [
+            'class' => 'btn btn-danger',
+            'data' => [
+                'confirm' => 'Вы уверены, что хотите удалить данную запись?',
+                'method' => 'post',
+            ],
+        ]) ?>
+        <?= Html::a( 'Назад', '../books-history', ['class' => 'btn btn-warning']); ?>
+    </p>
+
+    <?php try {
+        echo DetailView::widget([
+            'model' => $model,
+            'attributes' => [
+                [
+                    'attribute' => 'book_id',
+                    'value' => function ($data){
+                        return $data->book;
+                    },
+                ],
+                [
+                    'attribute' => 'user_id',
+                    'value' => function ($data) {
+                        return Html::a(Html::encode('Ссылка пользователя'), Url::to(['people/', 'PeopleSearch[id]' => $data->user_id]));
+                    },
+                    'format' => 'raw',
+                ],
+                'date_from',
+                'date_end',
+                'comment',
+                'count',
+                [
+                    'attribute' => 'active',
+                    'value' => function ($data){
+                        if($data->active == 1){
+                            $options = ['style' => ['color' => 'green']];
+                            return Html::tag('span', Html::encode('Да'), $options);
+                        }
+                        else{
+                            $options = ['style' => ['color' => 'red']];
+                            return Html::tag('span', Html::encode('Нет'), $options);
+                        }
+                    },
+                    'format' => 'raw',
+                ],
+            ],
+        ]);
+    }
+    catch (Exception|Throwable $exception){
+        Yii::$app->session->setFlash('error',$exception->getMessage());
+    }?>
+
+</div>

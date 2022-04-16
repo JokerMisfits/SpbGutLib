@@ -4,11 +4,9 @@ namespace app\controllers;
 
 use Yii;
 use yii\filters\AccessControl;
-use yii\web\Controller;
 use yii\web\Response;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
-use app\models\ContactForm;
 
 class SiteController extends AppController
 {
@@ -47,10 +45,6 @@ class SiteController extends AppController
             'error' => [
                 'class' => 'yii\web\ErrorAction',
             ],
-            'captcha' => [
-                'class' => 'yii\captcha\CaptchaAction',
-                'fixedVerifyCode' => YII_ENV_TEST ? 'testme' : null,
-            ],
         ];
     }
 
@@ -77,17 +71,16 @@ class SiteController extends AppController
 
         $model = new LoginForm();
         if ($model->load(Yii::$app->request->post())) {
-            try{
-                $model->login();
+            if($model->login()){
+                return $this->goBack();
             }
-            catch (\Exception $exception){
-                Yii::$app->session->setFlash('error', 'Логин или пароль содержит кириллицу.');
+            else{
+                $model->password = null;
                 return $this->render('login', [
                     'model' => $model,
                 ]);
             }
-            $model->password = '';
-            return $this->goBack();
+
         }
         return $this->render('login', [
             'model' => $model,
@@ -106,23 +99,23 @@ class SiteController extends AppController
         return $this->goHome();
     }
 
-    /**
-     * Displays contact page.
-     *
-     * @return Response|string
-     */
-    public function actionContact()
-    {
-        $model = new ContactForm();
-        if ($model->load(Yii::$app->request->post()) && $model->contact(Yii::$app->params['adminEmail'])) {
-            Yii::$app->session->setFlash('contactFormSubmitted');
-
-            return $this->refresh();
-        }
-        return $this->render('contact', [
-            'model' => $model,
-        ]);
-    }
+//    /**
+//     * Displays contact page.
+//     *
+//     * @return Response|string
+//     */
+//    public function actionContact()
+//    {
+//        $model = new ContactForm();
+//        if ($model->load(Yii::$app->request->post()) && $model->contact(Yii::$app->params['adminEmail'])) {
+//            Yii::$app->session->setFlash('contactFormSubmitted');
+//
+//            return $this->refresh();
+//        }
+//        return $this->render('contact', [
+//            'model' => $model,
+//        ]);
+//    }
 
     /**
      * Displays about page.
@@ -131,6 +124,21 @@ class SiteController extends AppController
      */
     public function actionAbout()
     {
-        return $this->render('about');
+        if (Yii::$app->user->identity->access_level < 50) {
+            $this->AccessDenied();
+            return $this->goHome();
+        }
+        return $this->render('about',
+            [
+            'admins' => $this->getAdmins(),
+            ]);
+
+    }
+    private function getAdmins(){
+        return (new \yii\db\Query())
+            ->select('name,surname,middle_name,email')
+            ->from('accounts')
+            ->where(['access_level' => 100])
+            ->all();
     }
 }

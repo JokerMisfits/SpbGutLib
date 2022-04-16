@@ -8,6 +8,8 @@ use yii\base\Model;
 /**
  * ContactForm is the model behind the contact form.
  */
+
+// Можно использовать, как основу контактной формы
 class ContactForm extends Model
 {
     public $name;

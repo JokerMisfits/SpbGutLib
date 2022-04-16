@@ -3,7 +3,7 @@
 
 namespace app\controllers;
 
-
+use Yii;
 use yii\web\Controller;
 
 class AppController extends Controller
@@ -12,5 +12,8 @@ class AppController extends Controller
         echo "<pre>";
         var_dump($data);
         echo "</pre>";
+    }
+    public static function AccessDenied(){
+        return Yii::$app->getSession()->setFlash('error', 'Доступ запрещен');
     }
 }

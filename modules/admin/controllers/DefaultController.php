@@ -3,7 +3,9 @@
 namespace app\modules\admin\controllers;
 
 use app\modules\admin\models\AccessLevel;
-use yii\web\Controller;
+use app\modules\admin\models\Books;
+use app\modules\admin\models\BooksHistory;
+use app\modules\admin\models\People;
 use Yii;
 
 /**
@@ -17,30 +19,34 @@ class DefaultController extends AppAdminController
      */
     public function actionIndex()
     {
-        $access = $this->getAccess(Yii::$app->user->identity->access_level);
-        if($access == 001){
-            return $this->goHome();
-        }else{
-            return $this->render('index', [
-                'access' => $access,
-            ]);
-        }
+        return $this->render('index', [
+            'access' => $this->getAccess(Yii::$app->user->identity->access_level),
+            'task' => $this->getTask(Yii::$app->user->identity->parent_id),
+            'books' => $this->getBooks(),
+            'people' => $this->getPeople(),
+            'tasks' => $this->getTasks(),
+        ]);
     }
 
     private function getAccess($level){
         $access = AccessLevel::find()
-        ->all();
-        $count = count($access);
-        $newAccess = [];
-        for($i = 0;$i < $count;$i++){
-            $j =  $access[$i]['access_level'];
-            $newAccess[$j] = $access[$i]['access_name'];
-        }
-        if(isset($newAccess[$level])){
-            return $newAccess[$level];
-        }
-        else{
-            return 001;
-        }
+        ->where(['access_level' => $level])
+        ->one();
+        return $access['access_name'];
+    }
+    private function getTask($id){
+        $tasks = BooksHistory::find()
+            ->where(['user_id' => $id,'active' => 1])
+            ->count();
+        return $tasks;
+    }
+    private function getBooks(){
+       return Books::find()->count();
+    }
+    private function getPeople(){
+        return People::find()->count();
+    }
+    private function getTasks(){
+        return BooksHistory::find()->count();
     }
 }

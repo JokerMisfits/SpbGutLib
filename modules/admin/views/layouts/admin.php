@@ -8,6 +8,7 @@ use yii\helpers\Html;
 use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
 use app\assets\AppAsset;
+use yii\helpers\Url;
 
 AppAsset::register($this);
 $this->registerCssFile("@web/css/admin.css");
@@ -33,6 +34,12 @@ $this->registerCssFile("@web/css/admin.css");
             content:" *";
             color:red;
         }
+        th{
+            text-align: center!important;
+        }
+        .summary{
+            text-align: left!important;
+        }
     </style>
     <?php $this->head() ?>
 </head>
@@ -42,72 +49,88 @@ $this->registerCssFile("@web/css/admin.css");
 <div class="wrap">
     <?php
     NavBar::begin([
-        'brandLabel' => 'AdminPanel',
+        'brandLabel' => Yii::$app->name,
         'brandUrl' => '/admin',
         'options' => [
             'class' => 'navbar-inverse navbar-fixed-top',
         ],
     ]);
-    echo Nav::widget([
-        'options' => ['class' => 'navbar-nav navbar-right'],
-        'items' => [
-            ['label' => 'Home', 'url' => ['/']],
+    try {
+        echo Nav::widget([
+            'options' => ['class' => 'navbar-nav navbar-right'],
+            'items' => [
+                ['label' => 'Home', 'url' => Url::to('/')],
 
-
-            Yii::$app->user->identity->access_level < 100 ? (
-            [
-                    'label' => 'Books',
-                    'items' => [
-                        ['label' => 'Read', 'url' => '/admin/books/'],
-                    ],
-            ]
-            ) : (
-            [
-                'label' => 'Users',
-                'items' => [
-                    ['label' => 'Create', 'url' => '/admin/people/create'],
-                    ['label' => 'Read', 'url' => '/admin/people/'],
-                ],
-            ]),
-
-            Yii::$app->user->identity->access_level < 100 ? ('') : (
-            [
+                Yii::$app->user->identity->access_level < 50 ? ('') : (
+                [
                     'label' => 'Accounts',
                     'items' => [
-                        ['label' => 'Create', 'url' => '/admin/accounts/create'],
-                        ['label' => 'Read', 'url' => '/admin/accounts'],
+                        ['label' => 'Create', 'url' => Url::to('/admin/accounts/create/')],
+                        ['label' => 'Read', 'url' => Url::to('/admin/accounts/index')],
                     ],
-            ]),
+                ]),
 
-            Yii::$app->user->identity->access_level < 100 ? ('') : (
-            [
-                'label' => 'Books',
-                'items' => [
-                    ['label' => 'Create', 'url' => '/admin/books/create'],
-                    ['label' => 'Read', 'url' => '/admin/books/'],
-                ],
-            ]),
+                Yii::$app->user->identity->access_level < 50 ? ('') : (
+                [
+                    'label' => 'Books',
+                    'items' => [
+                        ['label' => 'Books', 'url' => Url::to('/admin/books')],
+                        ['label' => 'Categories', 'url' => Url::to('/admin/books-categories')],
+                        ['label' => 'Subjects', 'url' => Url::to('/admin/books-subjects')],
+                        ['label' => 'Tasks', 'url' => Url::to('/admin/books-history')],
+                    ],
+                ]),
 
-            Yii::$app->user->isGuest ? (
-            ['label' => 'Login', 'url' => ['/login']]
-            ) : (
-                '<li>'
-                . Html::beginForm(['/site/logout'], 'post')
-                . Html::submitButton(
-                    'Logout (' . Yii::$app->user->identity->name . ')',
-                    ['class' => 'btn btn-link logout']
+                Yii::$app->user->identity->access_level < 50 ? (
+                ['label' => 'Books', 'url' => Url::to('/admin/books')]) : (''),
+
+                Yii::$app->user->identity->access_level < 100 ? ('') : (
+                [
+                    'label' => 'Departments',
+                    'items' => [
+                        ['label' => 'Create', 'url' => Url::to('/admin/departments/create')],
+                        ['label' => 'Read', 'url' => Url::to('/admin/departments')],
+                    ],
+                ]),
+
+                Yii::$app->user->identity->access_level < 50 ? ('') : (
+                [
+                    'label' => 'Users',
+                    'items' => [
+                        ['label' => 'Create', 'url' => Url::to('/admin/people/create')],
+                        ['label' => 'Read', 'url' => Url::to('/admin/people')],
+                    ],
+                ]),
+
+                Yii::$app->user->isGuest ? (
+                ['label' => 'Login', 'url' => ['/login']]
+                ) : (
+                    '<li>'
+                    . Html::beginForm(['/site/logout'], 'post')
+                    . Html::submitButton(
+                        'Logout (' . Yii::$app->user->identity->name . ')',
+                        ['class' => 'btn btn-link logout']
+                    )
+                    . Html::endForm()
+                    . '</li>'
                 )
-                . Html::endForm()
-                . '</li>'
-            )
-        ],
-    ]);
-
-    NavBar::end();
+            ],
+        ]);
+        NavBar::end();
+    }
+    catch (Exception $exception){
+        return Yii::$app->getSession()->setFlash('error', $exception);
+    }
     ?>
 
     <div class="admin-layout container col-xs-12 col-lg-12">
-        <?= Alert::widget() ?>
+        <?php try{
+            echo Alert::widget();
+        }
+        catch (Exception $exception){
+            return Yii::$app->getSession()->setFlash('error', $exception);
+        }
+         ?>
         <?= $content ?>
     </div>
 </div>

@@ -2,8 +2,6 @@
 
 namespace app\modules\admin\models;
 
-use Yii;
-
 /**
  * This is the model class for table "books".
  *
@@ -17,6 +15,7 @@ use Yii;
  * @property string|null $publisher
  * @property string|null $publish_date
  * @property string|null $annotation
+ * @property string|null $comment
  * @property int $category_id
  * @property int $subject_id
  * @property int $count
@@ -35,7 +34,7 @@ class Books extends \yii\db\ActiveRecord
     public function getCategory(){
         $rows = (new \yii\db\Query())
             ->select('name')
-            ->from('Books_categories')
+            ->from('books_categories')
             ->where(['id' => $this->category_id])
             ->one();
         return $rows['name'];
@@ -43,7 +42,7 @@ class Books extends \yii\db\ActiveRecord
     public function getSubject(){
         $rows = (new \yii\db\Query())
             ->select('name')
-            ->from('Books_subjects')
+            ->from('books_subjects')
             ->where(['id' => $this->subject_id])
             ->one();
         return $rows['name'];
@@ -54,10 +53,20 @@ class Books extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'category_id', 'subject_id', 'count'], 'required'],
-            [['author', 'keywords','name','annotation'], 'string'],
+            [['name', 'date', 'category_id', 'subject_id','count'], 'required'],
+            [['name', 'author', 'keywords', 'annotation', 'comment'], 'string'],
             [['category_id', 'subject_id', 'count', 'rest', 'stock'], 'integer'],
-            [['date', 'ISBN', 'ISSN', 'publisher', 'publish_date'], 'string', 'max' => 255],
+            ['count', 'integer', 'min' => 0],
+            ['count', 'integer', 'max' => 999],
+            [['keywords', 'comment'], 'string', 'min' => 4],
+            ['annotation', 'string', 'min' => 20],
+            [['date', 'publish_date'], 'string', 'min' => 1],
+            [['date', 'publish_date'], 'string', 'max' => 4],
+            [['ISBN', 'ISSN'], 'string', 'max' => 25],
+            [['name','author','publisher','keywords','comment'], 'string', 'max' => 255],
+            [['date','publish_date'], 'match', 'pattern' => '/^[0-9]{4}$/','message' => '{attribute} должна состоять из 4 чисел'],
+            [['ISBN','ISSN'], 'match', 'pattern' => '/^[0-9-]+$/i','message' => '{attribute} должна состоять только из чисел и дефисов 978-5-9268-2477-0'],
+            [['name', 'date', 'author', 'keywords', 'annotation', 'comment'], 'trim'],
         ];
     }
 
@@ -70,7 +79,7 @@ class Books extends \yii\db\ActiveRecord
             'id' => 'ID',
             'name' => 'Название',
             'author' => 'Авторы',
-            'date' => 'Дата выпуска',
+            'date' => 'Дата публикации',
             'keywords' => 'Ключевые слова',
             'ISBN' => 'ISBN',
             'ISSN' => 'ISSN',
@@ -79,6 +88,7 @@ class Books extends \yii\db\ActiveRecord
             'category_id' => 'Категория',
             'subject_id' => 'Тематика',
             'annotation' => 'Аннотация',
+            'comment' => 'Комментарий',
             'count' => 'Количество',
             'rest' => 'Остаток',
             'stock' => 'Есть в наличии',

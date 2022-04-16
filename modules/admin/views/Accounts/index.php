@@ -13,7 +13,7 @@ use yii\helpers\Url;
 $this->title = 'Аккаунты';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="accounts-index">
+
 
     <h1><?= Html::encode($this->title) ?></h1>
 
@@ -22,9 +22,9 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Html::a('Сбросить поиск', ['index'], ['class' => 'btn btn-primary']) ?>
     </p>
 
-    <?php //  echo $this->render('_search', ['model' => $searchModel]); ?>
-    <?php
+<div class="accounts-index text-center">
 
+    <?php
     try{
         echo GridView::widget([
         'dataProvider' => $dataProvider,
@@ -41,6 +41,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'value' => function ($data) {
                     return Html::a(Html::encode('Ссылка пользователя'), Url::to(['people/', 'PeopleSearch[id]' => $data->parent]));
                 },
+                'filter' => false,
                 'format' => 'raw',
             ],
             [
@@ -62,19 +63,8 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
     ]);
     }
-    catch (Exception $exception){
-        if(isset($exception->errorInfo[0]) && $exception->errorInfo[0] != null){
-            $error = $exception->errorInfo[0].'<br>';
-            $error .= $exception->errorInfo[1].'<br>';
-            $error .= $exception->errorInfo[2].'<br>';
-            $url = Url::to(['./accounts']);
-            $error .= "<a href='$url'>Назад</a>";
-            Yii::$app->session->setFlash('error', "Поиск в данном поле возможен только латиницей.<br> $error");
-        }
-        else{
-            echo '<pre>';
-            exit(var_dump($exception));
-        }
+    catch (Exception|Throwable $exception){
+            Yii::$app->session->setFlash('error', $exception->getMessage());
     }?>
 
 

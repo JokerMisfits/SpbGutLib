@@ -5,6 +5,7 @@ namespace app\modules\admin\controllers;
 
 use yii\web\Controller;
 use yii\filters\AccessControl;
+use Yii;
 
 class AppAdminController extends Controller
 {
@@ -27,6 +28,10 @@ class AppAdminController extends Controller
         echo "<pre>";
         var_dump($data);
         echo "</pre>";
+    }
+
+    public static function AccessDenied(){
+        return Yii::$app->getSession()->setFlash('error', 'Доступ запрещен');
     }
 
 }

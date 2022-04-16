@@ -27,7 +27,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Html::a( 'Назад', '../people', ['class' => 'btn btn-warning']); ?>
     </p>
 
-    <?
+    <?php
     try {
       echo  DetailView::widget([
             'model' => $model,
@@ -35,7 +35,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'name',
                 'surname',
                 'middle_name',
-                'comment:ntext',
+                'comment',
                 'books',
                 'pass_number',
                 [
@@ -47,9 +47,8 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
         ]);
     }
-    catch (Exception $exception){
-        return Yii::$app->getSession()->setFlash('error', $exception);
-    }
- ?>
+    catch (Exception|Throwable $exception){
+        Yii::$app->session->setFlash('error',$exception->getMessage());
+    }?>
 
 </div>

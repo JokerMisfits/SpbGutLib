@@ -28,7 +28,7 @@ AppAsset::register($this);
     <title><?= Html::encode($this->title) ?></title>
     <?php $this->head() ?>
 </head>
-<body>
+<body style="background-color: #eee"">
 <?php $this->beginBody() ?>
 
 <div class="wrap">
@@ -44,14 +44,18 @@ AppAsset::register($this);
         'options' => ['class' => 'navbar-nav navbar-right'],
         'items' => [
             ['label' => 'Главная', 'url' => ['/']],
-            ['label' => 'О нас', 'url' => ['/about']],
+            Yii::$app->user->identity->access_level < 50 ? (
+            ''
+            ) : (
+            ['label' => 'Инструкции', 'url' => ['/about']]
+            ),
             Yii::$app->user->isGuest ? (
                 ''
             ) : (
-              ['label' => 'Управление', 'url' => ['/admin']]
+              ['label' => 'Профиль', 'url' => ['/admin']]
             ),
             Yii::$app->user->isGuest ? (
-                ['label' => 'Login', 'url' => ['/login']]
+                ['label' => 'Войти', 'url' => ['/login']]
             ) : (
                 '<li>'
                 . Html::beginForm(['/site/logout'], 'post')

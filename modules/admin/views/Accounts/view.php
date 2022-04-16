@@ -27,28 +27,33 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Html::a( 'Назад', '../accounts', ['class' => 'btn btn-warning']); ?>
     </p>
 
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            'username',
-            'name',
-            'surname',
-            'middle_name',
-            'pass_number',
-            'email',
-            [
-                'attribute' => 'department_id',
-                'value' => function ($data){
-                    return $data->depart;
-                }
+    <?php try {
+        echo DetailView::widget([
+            'model' => $model,
+            'attributes' => [
+                'username',
+                'name',
+                'surname',
+                'middle_name',
+                'pass_number',
+                'email',
+                [
+                    'attribute' => 'department_id',
+                    'value' => function ($data){
+                        return $data->depart;
+                    }
+                ],
+                [
+                    'attribute' => 'access_level',
+                    'value' => function ($data){
+                        return $data->access;
+                    }
+                ],
             ],
-            [
-                'attribute' => 'access_level',
-                'value' => function ($data){
-                    return $data->access;
-                }
-            ],
-        ],
-    ]) ?>
+        ]);
+    }
+    catch (Exception|Throwable $exception){
+        Yii::$app->session->setFlash('error',$exception->getMessage());
+    }?>
 
 </div>

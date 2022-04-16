@@ -4,7 +4,6 @@ namespace app\modules\admin\models;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\modules\admin\models\Accounts;
 
 /**
  * AccountsSearch represents the model behind the search form of `app\modules\admin\models\Accounts`.
@@ -17,8 +16,9 @@ class AccountsSearch extends Accounts
     public function rules()
     {
         return [
-            [['id', 'access_level', 'pass_number', 'department_id'], 'integer'],
+            [['id', 'access_level', 'parent_id', 'pass_number', 'department_id'], 'integer'],
             [['username', 'name', 'surname', 'middle_name'], 'safe'],
+            ['username', 'match', 'pattern' => '/^[a-z]\w*$/i','message' => '{attribute} должен начинаться и содержать символы только латинского алфавита'],
         ];
     }
 
@@ -46,6 +46,16 @@ class AccountsSearch extends Accounts
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'pagination' => [
+                'forcePageParam' => false,
+                'pageSizeParam' => false,
+                'pageSize' => 25,
+            ],
+            'sort' => [
+                'defaultOrder' => [
+                    'username' => SORT_ASC,
+                ]
+            ],
         ]);
 
         $this->load($params);

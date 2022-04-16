@@ -2,8 +2,6 @@
 
 namespace app\modules\admin\models;
 
-use Yii;
-
 /**
  * This is the model class for table "accounts".
  *
@@ -55,12 +53,23 @@ class Accounts extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['username', 'password', 'access_level', 'name', 'surname', 'middle_name', 'pass_number', 'department_id'], 'required'],
+            [['username', 'password', 'name', 'surname', 'middle_name', 'pass_number', 'department_id'], 'required'],
             [['access_level', 'parent_id', 'pass_number', 'department_id'], 'integer'],
-            [['username', 'password', 'auth_key', 'name', 'surname', 'middle_name', 'email'], 'string', 'max' => 255],
+            [['username'], 'string', 'min' => 4],
+            [['password'], 'string', 'min' => 4],
+            [['email'], 'string', 'min' => 6],
+            [['email'], 'string', 'max' => 255],
+            [['username'], 'string', 'max' => 32],
+            [['password', 'auth_key', 'email'], 'string', 'max' => 255],
+            [['name', 'surname', 'middle_name'], 'string', 'max' => 20],
             [['username'], 'unique'],
             [['pass_number'], 'unique'],
             [['email'], 'unique'],
+            [['parent_id'], 'unique'],
+            [['email'], 'email'],
+            ['username', 'match', 'pattern' => '/^[a-z]\w*$/i','message' => '{attribute} должен начинаться и содержать символы только латинского алфавита'],
+            ['pass_number', 'match', 'pattern' => '/^[0-9]{4,25}$/','message' => '{attribute} должен состоять минимум из 4 цифр, максимум 25.'],
+            [['username', 'password', 'name', 'surname', 'middle_name', 'pass_number', 'email'], 'trim'],
         ];
     }
 

@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $model app\modules\admin\models\Accounts */
@@ -13,10 +14,13 @@ use yii\widgets\ActiveForm;
 <script src="../../../../web/js/sha512.js"></script>
 <div class="accounts-form" >
 
-    <?php $form = ActiveForm::begin([
+    <?php
+
+    $form = ActiveForm::begin([
         'id' => 'accounts-form',
+        'enableAjaxValidation' => true,
         'fieldConfig' => [
-            'template' => "<div class=\"col-lg-offset-3 \"> {label}</div>\n<div class=\"col-lg-6 col-lg-offset-3\">{input}</div>\n<div class=\"col-xs-12 col-lg-3 col-lg-offset-5 \">{error}</div>",
+            'template' => "<div class=\"col-lg-offset-3 \"> {label}</div>\n<div class=\"col-lg-6 col-lg-offset-3\">{input}</div>\n<div class=\"col-lg-6 col-lg-offset-3 \">{error}</div>",
             'labelOptions' => ['class' => 'col-lg-12 control-label'],
         ],
         'class' => 'd-flex justify-content-center',
@@ -24,19 +28,17 @@ use yii\widgets\ActiveForm;
 <!--  FORM FOR CREATE  -->
 
     <?php
-    if(Yii::$app->controller->action->id == 'create' && (isset(Yii::$app->user->identity->access_level) && (Yii::$app->user->identity->access_level == 100))){
-        echo $form->field($model, 'username')->textInput(['maxlength' => true]);
-        echo $form->field($model, 'password',['selectors' =>
+    if(Yii::$app->controller->action->id == 'create' && (isset(Yii::$app->user->identity->access_level) && (Yii::$app->user->identity->access_level >= 100))){
+        echo $form->field($model, 'username',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textInput(['maxlength' => true]);
+        echo $form->field($model, 'password',['enableAjaxValidation' => true, 'enableClientValidation' => false,'selectors' =>
             ['id' => '#accounts-password']])->passwordInput(['maxlength' => false]);
-        echo $form->field($model, 'name')->textInput(['maxlength' => true]);
-        echo $form->field($model, 'surname')->textInput(['maxlength' => true]);
-        echo $form->field($model, 'middle_name')->textInput(['maxlength' => true]);
-        echo $form->field($model, 'pass_number')->textInput(['maxlength' => true]);
-        echo $form->field($model, 'email')->textInput(['maxlength' => true]);
-        if(isset(Yii::$app->user->identity->access_level) && (Yii::$app->user->identity->access_level >= 100)){
-            echo $form->field($model, 'access_level')->dropDownList($level,['prompt' => 'Выберите уровень доступа']);
-        }
-        echo $form->field($model, 'department_id')->dropDownList($depart,['prompt' => 'Выберите кафедру']);
+        echo $form->field($model, 'name',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textInput(['maxlength' => true]);
+        echo $form->field($model, 'surname',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textInput(['maxlength' => true]);
+        echo $form->field($model, 'middle_name',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textInput(['maxlength' => true]);
+        echo $form->field($model, 'pass_number',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textInput(['maxlength' => true]);
+        echo $form->field($model, 'email',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textInput(['maxlength' => true]);
+        echo $form->field($model, 'access_level',['enableAjaxValidation' => true, 'enableClientValidation' => false])->dropDownList($level,['prompt' => 'Выберите уровень доступа']);
+        echo $form->field($model, 'department_id',['enableAjaxValidation' => true, 'enableClientValidation' => false])->dropDownList($depart,['prompt' => 'Выберите кафедру']);
     }
     ?>
 
@@ -44,15 +46,13 @@ use yii\widgets\ActiveForm;
 
 <!--  FORM FOR UPDATE  -->
     <?php
-        if(Yii::$app->controller->action->id == 'update' && (isset(Yii::$app->user->identity->access_level) && (Yii::$app->user->identity->access_level == 100))){
-            echo $form->field($model, 'name')->textInput(['maxlength' => true]);
-            echo $form->field($model, 'surname')->textInput(['maxlength' => true]);
-            echo $form->field($model, 'middle_name')->textInput(['maxlength' => true]);
-            echo $form->field($model, 'email')->textInput(['maxlength' => true]);
-            echo $form->field($model, 'department_id')->dropDownList($depart);
-            if(isset(Yii::$app->user->identity->access_level) && (Yii::$app->user->identity->access_level >= 100)){
-                echo $form->field($model, 'access_level')->dropDownList($level);
-            }
+        if(Yii::$app->controller->action->id == 'update' && (isset(Yii::$app->user->identity->access_level) && (Yii::$app->user->identity->access_level >= 100 || Yii::$app->user->identity->id == $model->id))){
+            echo $form->field($model, 'name',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textInput(['maxlength' => true]);
+            echo $form->field($model, 'surname',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textInput(['maxlength' => true]);
+            echo $form->field($model, 'middle_name',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textInput(['maxlength' => true]);
+            echo $form->field($model, 'email',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textInput(['maxlength' => true]);
+            echo $form->field($model, 'department_id',['enableAjaxValidation' => true, 'enableClientValidation' => false])->dropDownList($depart);
+            echo $form->field($model, 'access_level',['enableAjaxValidation' => true, 'enableClientValidation' => false])->dropDownList($level);
         }
 
     ?>
@@ -63,7 +63,7 @@ use yii\widgets\ActiveForm;
 
     <?php ActiveForm::end(); ?>
     <div class="col-xs-12">
-        <a href="<?= Yii::$app->request->referrer ?>"><button class="btn btn-danger col-xs-12 col-lg-6 col-lg-offset-3">Назад</button></a>
+        <a href="<?= Url::to('/admin/accounts'); ?>"><button class="btn btn-danger col-xs-12 col-lg-6 col-lg-offset-3">Назад</button></a>
     </div>
 
 

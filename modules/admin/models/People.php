@@ -2,8 +2,6 @@
 
 namespace app\modules\admin\models;
 
-use Yii;
-
 /**
  * This is the model class for table "people".
  *
@@ -36,12 +34,17 @@ class People extends \yii\db\ActiveRecord
         return [
             [['name', 'surname', 'middle_name', 'pass_number', 'department_id'], 'required'],
             [['access_level', 'child_id', 'pass_number', 'department_id'], 'integer'],
-            [['comment'], 'string'],
-            [['name', 'surname', 'middle_name', 'books'], 'string', 'max' => 255],
+            ['comment', 'string','min' => 4],
+            ['comment', 'string','max' => 255],
+            ['books', 'string'],
+            [['name', 'surname', 'middle_name'], 'string', 'max' => 20],
             [['pass_number'], 'unique'],
             [['child_id'], 'unique'],
+            ['pass_number', 'match', 'pattern' => '/^[0-9]{4,25}$/','message' => '{attribute} должен состоять минимум из 4 чисел, максимум 25.'],
+            [['name', 'surname', 'middle_name', 'pass_number', 'comment'], 'trim'],
         ];
     }
+
     public function getAccess(){
         $rows = (new \yii\db\Query())
             ->select('access_name')

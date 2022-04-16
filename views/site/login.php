@@ -3,10 +3,10 @@
 /* @var $this yii\web\View */
 /* @var $form yii\bootstrap\ActiveForm */
 /* @var $model app\models\LoginForm */
+/* @var $admins */
 
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
-
 
 $this->title = 'Авторизация';
 ?>
@@ -19,13 +19,17 @@ $this->title = 'Авторизация';
             <div class="col-lg-offset-4">
                     <?php $form = ActiveForm::begin([
                         'id' => 'login-form',
-                        'options' => ['autocomplete' => 'off'],
+                        'options' => [
+                                'autocomplete' => 'off',
+                                //'style' => 'background-color: white;border-radius: 15px; padding: 15px',
+                        ],
                         'layout' => 'horizontal',
                         'fieldConfig' => [
-                            'template' => "{label}\n<div class=\"col-lg-5\">{input}</div>\n<div class=\"col-lg-10 col-lg-offset-1\">{error}</div>",
+                            'template' => "{label}\n<div class=\"col-lg-5\">{input}</div>\n<div class=\"col-lg-7 col-lg-offset-1\">{error}</div>",
                             'labelOptions' => ['class' => 'col-lg-1 control-label'],
                         ],
                         'class' => 'd-flex justify-content-center',
+
 
                     ]); ?>
 

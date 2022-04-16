@@ -4,16 +4,16 @@ use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $model app\modules\admin\models\Books */
-/* @var $category */
-/* @var $subject */
+/* @var $categories */
+/* @var $subjects */
 
 ?>
 <div class="books-update">
 
     <?= $this->render('_form', [
         'model' => $model,
-        'category' => $category,
-        'subject' => $subject,
+        'categories' => $categories,
+        'subjects' => $subjects,
     ]) ?>
 
 </div>

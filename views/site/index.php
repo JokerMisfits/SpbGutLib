@@ -11,6 +11,17 @@ use yii\helpers\Html;
 
         <p class="lead">Это web-сервис для учета и поиска летературы кафедры ИиРВ.</p>
         <hr class="my-4">
-        <p class="text-warning">Для продолжения работы, пожалуйста <?= Html::a('авторизуйтесь', ['login']) ?>!</p>
+        <?php
+        if(Yii::$app->user->isGuest){
+            echo '<p class="text-warning">Для продолжения работы, пожалуйста '. Html::a('авторизуйтесь', ['login']) . '!</p>';
+        }
+        elseif(Yii::$app->user->identity->access_level >= 50){
+            echo '<p class="text-warning">Рекомендуется ознакомиться с инструкциями по работе с данным сервисом '. Html::a('перейти', ['about']) . '!</p>';
+        }
+        else{
+            echo '<p class="text-warning">Начать работу с данным  '. Html::a('сервисом', ['/admin/']) . '!</p>';
+        }
+        ?>
+
     </div>
 </div>

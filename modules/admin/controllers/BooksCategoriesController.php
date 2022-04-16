@@ -8,6 +8,11 @@ use app\modules\admin\models\BooksCategoriesSearch;
 use yii\filters\AccessControl;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use app\modules\admin\models\Books;
+use yii\helpers\Html;
+use yii\helpers\Url;
+use yii\web\Response;
+use yii\widgets\ActiveForm;
 
 /**
  * BooksCategoriesController implements the CRUD actions for BooksCategories model.
@@ -44,6 +49,10 @@ class BooksCategoriesController extends AppAdminController
      */
     public function actionIndex()
     {
+        if (Yii::$app->user->identity->access_level < 50) {
+            $this->AccessDenied();
+            return $this->goHome();
+        }
         $searchModel = new BooksCategoriesSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
@@ -61,6 +70,10 @@ class BooksCategoriesController extends AppAdminController
      */
     public function actionView($id)
     {
+        if (Yii::$app->user->identity->access_level < 50) {
+            $this->AccessDenied();
+            return $this->goHome();
+        }
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
@@ -74,8 +87,24 @@ class BooksCategoriesController extends AppAdminController
     public function actionCreate()
     {
         $model = new BooksCategories();
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if (Yii::$app->user->identity->access_level < 50) {
+            $this->AccessDenied();
+            return $this->goHome();
+        }
+        if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return ActiveForm::validate($model);
+        }
+        if ($model->load(Yii::$app->request->post())) {
+            try {
+                $model->save();
+            }
+            catch (\Exception|\Throwable $exception){
+                Yii::$app->getSession()->setFlash('error', $exception->getMessage());
+                return $this->render('create', [
+                    'model' => $model,
+                ]);
+            }
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
@@ -93,9 +122,32 @@ class BooksCategoriesController extends AppAdminController
      */
     public function actionUpdate($id)
     {
+        if (Yii::$app->user->identity->access_level < 50) {
+            $this->AccessDenied();
+            return $this->goHome();
+        }
         $model = $this->findModel($id);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return ActiveForm::validate($model);
+        }
+        if ($model->load(Yii::$app->request->post())) {
+            $oldModel = BooksCategories::find()->where(['id' => $model->id])->one();
+            if($model->toArray() == $oldModel->toArray()){
+                Yii::$app->getSession()->setFlash('error', 'Измените данные перед отправкой!');
+                return $this->render('update', [
+                    'model' => $model,
+                ]);
+            }
+            try {
+                $model->save();
+            }
+            catch (\Exception|\Throwable $exception){
+                Yii::$app->getSession()->setFlash('error', $exception->getMessage());
+                return $this->render('update', [
+                    'model' => $model,
+                ]);
+            }
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
@@ -113,9 +165,26 @@ class BooksCategoriesController extends AppAdminController
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
-
-        return $this->redirect(['index']);
+        if (Yii::$app->user->identity->access_level < 100) {
+            $this->AccessDenied();
+            return $this->goHome();
+        }
+        $books = Books::find()->where(['category_id' => $id])->one();
+        if($books == null){
+            $model = $this->findModel($id);
+            try {
+                $model->delete();
+            }
+            catch (\Exception|\Throwable $exception){
+                Yii::$app->getSession()->setFlash('error', $exception->getMessage());
+                return $this->redirect(Url::to(['/admin/books-categories']));
+            }
+        }
+        else{
+            Yii::$app->getSession()->setFlash('error', 'Данная категория еще используется! '. Html::a(Html::encode('Перейти к данным книгам'), Url::to(['books/', 'BooksSearch[category_id]' => $id])));
+            return $this->redirect(Url::to(['/admin/books-categories']));
+        }
+        return $this->redirect(Url::to(['/admin/books-categories']));
     }
 
     /**

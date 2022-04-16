@@ -2,8 +2,6 @@
 
 namespace app\modules\admin\models;
 
-use Yii;
-
 /**
  * This is the model class for table "books_categories".
  *
@@ -29,6 +27,7 @@ class BooksCategories extends \yii\db\ActiveRecord
             [['name'], 'required'],
             [['name'], 'string', 'max' => 255],
             [['name'], 'unique'],
+            ['name', 'trim'],
         ];
     }
 

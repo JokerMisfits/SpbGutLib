@@ -3,14 +3,18 @@
 namespace app\modules\admin\controllers;
 
 use app\modules\admin\models\Accounts;
+use app\modules\admin\models\BooksHistory;
 use Yii;
-use app\modules\admin\models\people;
+use app\modules\admin\models\People;
 use app\modules\admin\models\AccessLevel;
 use app\modules\admin\models\Department;
 use app\modules\admin\models\PeopleSearch;
 use yii\filters\AccessControl;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\web\Response;
+use yii\widgets\ActiveForm;
+use yii\helpers\Url;
 
 /**
  * PeopleController implements the CRUD actions for people model.
@@ -47,11 +51,14 @@ class PeopleController extends AppAdminController
      */
     public function actionIndex()
     {
+        if (Yii::$app->user->identity->access_level < 50) {
+            $this->AccessDenied();
+            return $this->goHome();
+        }
         $searchModel = new PeopleSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         $access = new AccessLevel();
         $department = new Department();
-
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -69,6 +76,7 @@ class PeopleController extends AppAdminController
     public function actionView($id)
     {
         if (Yii::$app->user->identity->access_level < 50) {
+            $this->AccessDenied();
             return $this->goHome();
         }
         else{
@@ -85,21 +93,28 @@ class PeopleController extends AppAdminController
      */
     public function actionCreate()
     {
-        $model = new people();
-
-        if ($model->load(Yii::$app->request->post())) {
-            if($model->save()){
-                return $this->redirect(['view', 'id' => $model->id]);
-            }
-            else{
-                $error = $model->errors[array_keys($model->errors)[0]];
-                Yii::$app->getSession()->setFlash('error', $error);
-                return $this->redirect(['create']);
-            }
-            return $this->redirect(['view', 'id' => $model->id]);
-        }
         if (Yii::$app->user->identity->access_level < 50) {
+            $this->AccessDenied();
             return $this->goHome();
+        }
+        $model = new People();
+        if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return ActiveForm::validate($model);
+        }
+        if ($model->load(Yii::$app->request->post())) {
+            $findDuplicate = People::find()->where(['pass_number' => $model->pass_number])->one();
+            if($findDuplicate != null){
+                Yii::$app->getSession()->setFlash('error', 'Данный номер пропуска уже используется!');
+                return $this->redirect('create');
+            }
+            try {
+                $model->save();
+            }
+            catch (\Exception|\Throwable $exception){
+                Yii::$app->getSession()->setFlash('error', $exception->getMessage());
+                return $this->redirect('create');
+            }
         }
         else {
             return $this->render('create', [
@@ -107,6 +122,7 @@ class PeopleController extends AppAdminController
                 'depart' => $this->getDepart(),
             ]);
         }
+        return $this->redirect(['view', 'id' => $model->id]);
     }
 
     /**
@@ -118,9 +134,25 @@ class PeopleController extends AppAdminController
      */
     public function actionUpdate($id)
     {
-        $model = $this->findModel($id);
+        if (Yii::$app->user->identity->access_level < 100) {
+            $this->AccessDenied();
+            return $this->goHome();
+        }
 
+        $model = $this->findModel($id);
+        if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return ActiveForm::validate($model);
+        }
         if ($model->load(Yii::$app->request->post())) {
+            $oldModel = People::find()->where(['id' => $model->id])->one();
+            if($model->toArray() == $oldModel->toArray()){
+                Yii::$app->getSession()->setFlash('error', 'Измените данные перед отправкой!');
+                return $this->render('update', [
+                    'model' => $model,
+                    'depart' => $this->getDepart(),
+                ]);
+            }
             if($model->child_id != null){
                 $command = Yii::$app->db->createCommand();
                 try {
@@ -128,9 +160,12 @@ class PeopleController extends AppAdminController
                     $this->checkForUpdate($model,$command);
                     Yii::$app->getSession()->setFlash('success', 'Изменения успешно сохранены');
                 }
-                catch (\Exception $exception){
-                    Yii::$app->getSession()->setFlash('error', $exception);
-                    return $this->redirect(['view', 'id' => $model->id]);
+                catch (\Exception|\Throwable $exception){
+                    Yii::$app->getSession()->setFlash('error', $exception->getMessage());
+                    return $this->render('update', [
+                        'model' => $model,
+                        'depart' => $this->getDepart(),
+                    ]);
                 }
             }
             else{
@@ -138,15 +173,15 @@ class PeopleController extends AppAdminController
                     $model->save();
                     Yii::$app->getSession()->setFlash('success', 'Изменения успешно сохранены');
                 }
-                catch (\Exception $exception){
-                    Yii::$app->getSession()->setFlash('error', $exception);
-                    return $this->redirect(['view', 'id' => $model->id]);
+                catch (\Exception|\Throwable $exception){
+                    Yii::$app->getSession()->setFlash('error', $exception->getMessage());
+                    return $this->render('update', [
+                        'model' => $model,
+                        'depart' => $this->getDepart(),
+                    ]);
                 }
             }
             return $this->redirect(['view', 'id' => $model->id]);
-        }
-        if (Yii::$app->user->identity->access_level < 50) {
-            return $this->goHome();
         }
         else {
             return $this->render('update', [
@@ -166,35 +201,49 @@ class PeopleController extends AppAdminController
     public function actionDelete($id)
     {
         if (Yii::$app->user->identity->access_level < 100) {
+            $this->AccessDenied();
             return $this->goHome();
         }
-        else{
-            $model = $this->findModel($id);
-            if ($model->access_level >= Yii::$app->user->identity->access_level) {
-                return $this->goHome();
-            }
-            else{
-                if ($this->findAccounts($model, false)) {
-                    Yii::$app->getSession()->setFlash('success', 'Пользователь из таблицы accounts и people [' . $model->surname . ' ' . $model->name . ' ' . $model->middle_name . '] успешно удален');
-
-                    try{
+        $model = $this->findModel($id);
+        if ($model->access_level >= Yii::$app->user->identity->access_level) {
+            $this->AccessDenied();
+            return $this->goHome();
+        }
+        if($model->books == null){
+            $transaction = Yii::$app->db->beginTransaction();
+            try{
+                if($this->findTasks($model->id) == true){
+                    if ($this->findAccounts($model, false) == true) {
                         $model->delete();
+                        $transaction->commit();
                     }
-                    catch (\Throwable $exception){
-                        return Yii::$app->getSession()->setFlash('error', $exception);
+                    else{
+                        Yii::$app->getSession()->setFlash('error', 'Не удалось удалить Аккаунт!');
+                        $transaction->rollBack();
+                        return $this->redirect(Url::to(['/admin/people']));
                     }
                 }
             }
-            return $this->redirect(['index']);
+            catch (\Exception|\Throwable $exception){
+                Yii::$app->getSession()->setFlash('error', $exception->getMessage());
+                $transaction->rollBack();
+                return $this->redirect(Url::to(['/admin/people']));
+            }
         }
+        else{
+            Yii::$app->getSession()->setFlash('error', 'Невозможно удалить пользователя, закройте заявки на книги и попробуйте снова!');
+            return $this->redirect(Url::to(['/admin/people']));
+        }
+        Yii::$app->getSession()->setFlash('success', 'Пользователь [' . $model->surname . ' ' . $model->name . ' ' . $model->middle_name . '] успешно удален');
+        return $this->redirect(Url::to(['/admin/people']));
     }
 
     private function getDepart(){
-        $department = Department::find()->all();
+        $department = Department::find()->orderBy(['name' => SORT_ASC])->all();
         $count = count($department);
         $depart = [];
         for($i = 0;$i < $count;$i++){
-            $depart[$i+1] = $department[$i]['name'];
+            $depart[$department[$i]['id']] = $department[$i]['name'];
         }
         return $depart;
     }
@@ -250,9 +299,53 @@ class PeopleController extends AppAdminController
             try{
                 $model->delete();
             }
-            catch (\Throwable $exception){
-                return Yii::$app->getSession()->setFlash('error', $exception);
+            catch (\Exception|\Throwable $exception){
+                Yii::$app->getSession()->setFlash('error', $exception->getMessage());
+                return $this->redirect(Url::to(['/admin/people']));
             }
+        }
+        return true;
+    }
+
+    private function findTasks($id){
+        $model = BooksHistory::find()
+            ->where(['user_id' => $id,'active' => 1])
+            ->asArray()
+            ->one();
+        if($model != null){
+            Yii::$app->getSession()->setFlash('error', 'Невозможно удалить данный аккаунт, закройте заявки на книги у данного пользователя и попробуйте снова!');
+            return $this->redirect(Url::to(['/admin/people']));
+        }
+        $model = BooksHistory::find()
+            ->where(['user_id' => $id])
+            ->asArray()
+            ->all();
+        if($model == null){
+            return true;
+        }
+        $count = count($model);
+        $db = Yii::$app->db;
+        $command = $db->createCommand();
+        $transaction = $db->beginTransaction();
+        for($i = 0;$i < $count;$i++){
+            try {
+                $command->delete('books_history',
+                    ['user_id' => $id,'active' => 0])
+                    ->execute();
+            }
+            catch (\Exception|\Throwable $exception){
+                $transaction->rollBack();
+                Yii::$app->getSession()->setFlash('error', $exception->getMessage());
+                return $this->redirect(Url::to(['/admin/people']));
+            }
+        }
+        try {
+            $transaction->commit();
+        }
+        catch (\Exception|\Throwable $exception){
+            $transaction->rollBack();
+            Yii::$app->getSession()->setFlash('error', $exception->getMessage());
+            return $this->redirect(Url::to(['/admin/people']));
         }
         return true;
     }
@@ -261,15 +354,15 @@ class PeopleController extends AppAdminController
      * Finds the people model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return people the loaded model
+     * @return People the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = people::findOne($id)) !== null) {
+        if (($model = People::findOne($id)) !== null) {
             return $model;
         }
 
-        throw new NotFoundHttpException('The requested page does not exist.');
+        throw new NotFoundHttpException('Запрашиваемая страница не найдена.');
     }
 }

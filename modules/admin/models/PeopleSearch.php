@@ -4,12 +4,11 @@ namespace app\modules\admin\models;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\modules\admin\models\people;
 
 /**
  * PeopleSearch represents the model behind the search form of `app\modules\admin\models\people`.
  */
-class PeopleSearch extends people
+class PeopleSearch extends People
 {
     /**
      * {@inheritdoc}
@@ -17,7 +16,7 @@ class PeopleSearch extends people
     public function rules()
     {
         return [
-            [['id', 'access_level', 'pass_number', 'department_id'], 'integer'],
+            [['id', 'access_level', 'child_id', 'pass_number', 'department_id'], 'integer'],
             [['name', 'surname', 'middle_name', 'comment', 'books'], 'safe'],
         ];
     }
@@ -46,6 +45,18 @@ class PeopleSearch extends people
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'pagination' => [
+                'forcePageParam' => false,
+                'pageSizeParam' => false,
+                'pageSize' => 25,
+            ],
+            'sort' => [
+                'defaultOrder' => [
+                    'surname' => SORT_ASC,
+                    'name' => SORT_ASC,
+                    'middle_name' => SORT_ASC,
+                ]
+            ],
         ]);
 
         $this->load($params);

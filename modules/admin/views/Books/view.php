@@ -27,48 +27,52 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Html::a( 'Назад', '../books', ['class' => 'btn btn-warning']); ?>
     </p>
 
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            //'id',
-            'name:ntext',
-            'author:ntext',
-            'date',
-            'keywords:ntext',
-            'ISBN',
-            'ISSN',
-            'publisher',
-            'publish_date',
-            [
-                'attribute' => 'category_id',
-                'value' => function ($data){
-                    return $data->category;
-                }
-            ],
-            [
-                'attribute' => 'subject_id',
-                'value' => function ($data){
-                    return $data->subject;
-                }
-            ],
-            'annotation:ntext',
-            'count',
-            'rest',
-            [
-                'attribute' => 'stock',
-                'value' => function ($data){
-                    if($data->stock == 1){
-                        $options = ['style' => ['color' => 'green']];
-                        return Html::tag('span', Html::encode('Есть в наличии'), $options);
+    <?php try {
+        echo DetailView::widget([
+            'model' => $model,
+            'attributes' => [
+                'name',
+                'author',
+                'date',
+                'keywords',
+                'ISBN',
+                'ISSN',
+                'publisher',
+                'publish_date',
+                [
+                    'attribute' => 'category_id',
+                    'value' => function ($data){
+                        return $data->category;
                     }
-                    else{
-                        $options = ['style' => ['color' => 'red']];
-                        return Html::tag('span', Html::encode('Нет в наличии'), $options);
+                ],
+                [
+                    'attribute' => 'subject_id',
+                    'value' => function ($data){
+                        return $data->subject;
                     }
-                },
-                'format' => 'raw',
+                ],
+                'annotation:ntext',
+                'count',
+                'rest',
+                [
+                    'attribute' => 'stock',
+                    'value' => function ($data){
+                        if($data->stock == 1){
+                            $options = ['class' => 'text-success'];
+                            return Html::tag('span', Html::encode('Есть в наличии'), $options);
+                        }
+                        else{
+                            $options = ['class' => 'text-danger'];
+                            return Html::tag('span', Html::encode('Нет в наличии'), $options);
+                        }
+                    },
+                    'format' => 'raw',
+                ],
             ],
-        ],
-    ]) ?>
+        ]);
+    }
+    catch (Exception|Throwable $exception){
+        Yii::$app->session->setFlash('error',$exception->getMessage());
+    }?>
 
 </div>

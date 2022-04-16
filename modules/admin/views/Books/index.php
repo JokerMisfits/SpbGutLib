@@ -2,26 +2,27 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
+use yii\helpers\ArrayHelper;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\modules\admin\models\BooksSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
-/* @var $category app\modules\admin\models\BooksCategories */
-/* @var $subject app\modules\admin\models\BooksSubjects */
-use yii\helpers\ArrayHelper;
+/* @var $categories app\modules\admin\models\BooksCategories */
+/* @var $subjects app\modules\admin\models\BooksSubjects */
+
 $this->title = 'Книги';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="books-index">
+
 
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Добавить новую книгу', ['create'], ['class' => 'btn btn-success']) ?>
+        <?php if(Yii::$app->user->identity->access_level >= 50){echo Html::a('Добавить новую книгу', ['create'], ['class' => 'btn btn-success']);} ?>
         <?= Html::a('Сбросить поиск', ['index'], ['class' => 'btn btn-primary']) ?>
     </p>
 
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+<div class="books-index text-center">
 
     <?
     try {
@@ -31,53 +32,55 @@ $this->params['breadcrumbs'][] = $this->title;
             'columns' => [
                 ['class' => 'yii\grid\SerialColumn'],
 
-                //'id',
-                'name:ntext',
-                'author:ntext',
+                'name',
+                'author',
                 'date',
-                'keywords:ntext',
+                'keywords',
                 'ISBN',
                 'ISSN',
                 'publisher',
-                //'publish_date',
                 [
                     'attribute' => 'category_id',
                     'value' => function ($data){
                         return $data->category;
                     },
-                    'filter' => Html::activeDropDownList($searchModel, 'category_id', ArrayHelper::map($category::find()->select('name,id')->orderBy(['name' => SORT_ASC])->asArray()->all(), 'id', 'name'),['class'=>'form-control','prompt' => 'Категории']),
+                    'filter' => Html::activeDropDownList($searchModel, 'category_id', ArrayHelper::map($categories::find()->select('name,id')->orderBy(['name' => SORT_ASC])->asArray()->all(), 'id', 'name'),['class'=>'form-control','prompt' => 'Категории']),
                 ],
                 [
                     'attribute' => 'subject_id',
                     'value' => function ($data){
                         return $data->subject;
                     },
-                    'filter' => Html::activeDropDownList($searchModel, 'subject_id', ArrayHelper::map($subject::find()->select('name,id')->orderBy(['name' => SORT_ASC])->asArray()->all(), 'id', 'name'),['class'=>'form-control','prompt' => 'Тематика']),
+                    'filter' => Html::activeDropDownList($searchModel, 'subject_id', ArrayHelper::map($subjects::find()->select('name,id')->orderBy(['name' => SORT_ASC])->asArray()->all(), 'id', 'name'),['class'=>'form-control','prompt' => 'Тематика']),
                 ],
-                //'annotation:ntext',
-                'count',
-                'rest',
-                //'stock',
-
+                Yii::$app->user->identity->access_level < 50 ? (
+                [
+                        'attribute' => 'stock',
+                        'value' => function ($data){
+                            if($data->stock == 1){
+                                $options = ['class' => 'text-success'];
+                                return Html::tag('span', Html::encode('Есть в наличии'), $options);
+                            }
+                            else{
+                                $options = ['class' => 'text-danger'];
+                                return Html::tag('span', Html::encode('Нет в наличии'), $options);
+                            }
+                        },
+                        'filter' => Html::activeDropDownList($searchModel, 'stock', [1 => 'Есть',0 => 'Нет'],['class'=>'form-control','prompt' => 'Все']),
+                        'format' => 'raw',
+                ]
+                ) : (
+                'count'
+                ),
+                Yii::$app->user->identity->access_level > 50 ? ('rest'):(''),
                 ['class' => 'yii\grid\ActionColumn'],
             ],
         ]);
+
     }
-    catch (Exception $exception){
-        if(isset($exception->errorInfo[0]) && $exception->errorInfo[0] != null){
-            $error = $exception->errorInfo[0].'<br>';
-            $error .= $exception->errorInfo[1].'<br>';
-            $error .= $exception->errorInfo[2].'<br>';
-            $url = Url::to(['./accounts']);
-            $error .= "<a href='$url'>Назад</a>";
-            Yii::$app->session->setFlash('error', "Поиск в данном поле возможен только латиницей.<br> $error");
-        }
-        else{
-            echo '<pre>';
-            exit(var_dump($exception));
-        }
-    }
- ?>
+    catch (Exception|Throwable $exception){
+        Yii::$app->session->setFlash('error', $exception->getMessage());
+    }?>
 
 
 </div>

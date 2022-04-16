@@ -4,7 +4,6 @@ namespace app\modules\admin\models;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\modules\admin\models\BooksHistory;
 
 /**
  * BooksHistorySearch represents the model behind the search form of `app\modules\admin\models\BooksHistory`.
@@ -18,7 +17,7 @@ class BooksHistorySearch extends BooksHistory
     {
         return [
             [['id', 'book_id', 'user_id', 'active', 'count'], 'integer'],
-            [['date', 'date_end', 'comment'], 'safe'],
+            [['date_from', 'date_end', 'comment'], 'safe'],
         ];
     }
 
@@ -46,6 +45,17 @@ class BooksHistorySearch extends BooksHistory
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'pagination' => [
+                'forcePageParam' => false,
+                'pageSizeParam' => false,
+                'pageSize' => 25,
+            ],
+            'sort' => [
+                'defaultOrder' => [
+                    'date_from' => SORT_DESC,
+                    'active' => SORT_DESC,
+                ]
+            ],
         ]);
 
         $this->load($params);
@@ -65,7 +75,7 @@ class BooksHistorySearch extends BooksHistory
             'count' => $this->count,
         ]);
 
-        $query->andFilterWhere(['like', 'date', $this->date])
+        $query->andFilterWhere(['like', 'date_from', $this->date_from])
             ->andFilterWhere(['like', 'date_end', $this->date_end])
             ->andFilterWhere(['like', 'comment', $this->comment]);
 

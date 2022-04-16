@@ -2,19 +2,19 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
+use yii\helpers\ArrayHelper;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\modules\admin\models\PeopleSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 /* @var $access app\modules\admin\models\AccessLevel */
 /* @var $department app\modules\admin\models\Department */
-use yii\helpers\ArrayHelper;
-use yii\helpers\Url;
 
 $this->title = 'Пользователи';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="people-index">
+
 
     <h1><?= Html::encode($this->title) ?></h1>
 
@@ -23,7 +23,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Html::a('Сбросить поиск', ['index'], ['class' => 'btn btn-primary']) ?>
     </p>
 
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+<div class="people-index text-center">
 
     <?php
     try {
@@ -32,19 +32,37 @@ $this->params['breadcrumbs'][] = $this->title;
             'filterModel' => $searchModel,
             'columns' => [
                 ['class' => 'yii\grid\SerialColumn'],
-                'name',
                 'surname',
+                'name',
                 'middle_name',
                 'pass_number',
-                'books',
+                [
+                    'attribute' => 'books',
+                    'value' => function ($data) {
+                        if($data->books == null){
+                            return null;
+                        }
+                        else{
+                            return Html::a(Html::encode('Список книг'), Url::to(['books-history/', 'BooksHistorySearch[user_id]' => $data->id,'BooksHistorySearch[active]' => 1]));
+                        }
+                    },
+                    'filter' => false,
+                    'format' => 'raw',
+                ],
                 [
                     'attribute' => 'child_id',
                     'value' => function ($data) {
-                        return Html::a(Html::encode('Ссылка аккаунта'), Url::to(['accounts/', 'AccountsSearch[id]' => $data->child]));
+                        if($data->child == null){
+                            return null;
+                        }
+                        else{
+                            return Html::a(Html::encode('Ссылка аккаунта'), Url::to(['accounts/', 'AccountsSearch[id]' => $data->child]));
+                        }
                     },
+                    'filter' => false,
                     'format' => 'raw',
                 ],
-                'comment:ntext',
+                'comment',
                 [
                     'attribute' => 'department_id',
                     'value' => function ($data){
@@ -57,19 +75,8 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
         ]);
     }
-    catch (Exception $exception){
-        if(isset($exception->errorInfo[0]) && $exception->errorInfo[0] != null){
-            $error = $exception->errorInfo[0].'<br>';
-            $error .= $exception->errorInfo[1].'<br>';
-            $error .= $exception->errorInfo[2].'<br>';
-            $url = Url::to(['./people']);
-            $error .= "<a href='$url'>Назад</a>";
-            Yii::$app->session->setFlash('error', "Поиск в данном поле возможен ввод только латиницей.<br> $error");
-        }
-        else{
-            echo '<pre>';
-            exit(var_dump($exception));
-        }
+    catch (Exception|Throwable $exception){
+        Yii::$app->session->setFlash('error', $exception->getMessage());
     }?>
 
 

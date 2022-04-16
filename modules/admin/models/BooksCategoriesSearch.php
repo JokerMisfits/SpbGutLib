@@ -4,7 +4,6 @@ namespace app\modules\admin\models;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\modules\admin\models\BooksCategories;
 
 /**
  * BooksCategoriesSearch represents the model behind the search form of `app\modules\admin\models\BooksCategories`.
@@ -46,6 +45,16 @@ class BooksCategoriesSearch extends BooksCategories
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'pagination' => [
+                'forcePageParam' => false,
+                'pageSizeParam' => false,
+                'pageSize' => 25,
+            ],
+            'sort' => [
+                'defaultOrder' => [
+                    'name' => SORT_ASC,
+                ]
+            ],
         ]);
 
         $this->load($params);
