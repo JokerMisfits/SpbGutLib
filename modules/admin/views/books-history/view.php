@@ -9,10 +9,15 @@ use yii\helpers\Url;
 /* @var $book */
 
 $this->title = $book;
-$this->params['breadcrumbs'][] = ['label' => 'Books Histories', 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
+
+<style>
+    body{
+        margin-top: 50px;
+    }
+</style>
+
 <div class="books-history-view">
 
     <h1><?= Html::encode($this->title) ?></h1>

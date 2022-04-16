@@ -6,10 +6,15 @@ use yii\helpers\Html;
 /* @var $model app\modules\admin\models\people */
 
 $this->title = 'Создание пользователя';
-$this->params['breadcrumbs'][] = ['label' => 'Peoples', 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
 /* @var $depart */
 ?>
+
+<style>
+    body{
+        margin-top: 50px;
+    }
+</style>
+
 <div class="people-create">
 
     <h1 class="text-center"><?= Html::encode($this->title) ?></h1>

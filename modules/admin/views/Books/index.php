@@ -11,9 +11,13 @@ use yii\helpers\ArrayHelper;
 /* @var $subjects app\modules\admin\models\BooksSubjects */
 
 $this->title = 'Книги';
-$this->params['breadcrumbs'][] = $this->title;
 ?>
 
+<style>
+    body{
+        margin-top: 50px;
+    }
+</style>
 
     <h1><?= Html::encode($this->title) ?></h1>
 
@@ -70,10 +74,32 @@ $this->params['breadcrumbs'][] = $this->title;
                         'format' => 'raw',
                 ]
                 ) : (
-                'count'
+                    'count'
                 ),
-                Yii::$app->user->identity->access_level > 50 ? ('rest'):(''),
-                ['class' => 'yii\grid\ActionColumn'],
+                Yii::$app->user->identity->access_level >= 50 ? ([
+                    'attribute' => 'rest',
+                    'value' => function ($data){
+                        return $data->rest;
+                    },
+                ]
+                ):([
+                    'attribute' => 'rest',
+                    'value' => function ($data){
+                        return $data->rest;
+                    },
+                    'visible' => false,
+                ]),
+                Yii::$app->user->identity->access_level >= 50 ? (
+                        ['class' => 'yii\grid\ActionColumn']
+                ):([
+                    'attribute' => 'rest',
+                    'value' => function ($data){
+                        return $data->rest;
+                    },
+                    'visible' => false,
+                ]),
+
+
             ],
         ]);
 

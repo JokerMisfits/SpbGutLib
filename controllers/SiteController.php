@@ -134,6 +134,14 @@ class SiteController extends AppController
             ]);
 
     }
+    public function actionUpdate(){
+        if (Yii::$app->user->identity->access_level < 100) {
+            $this->AccessDenied();
+            return $this->goHome();
+        }
+        return $this->render('update');
+    }
+
     private function getAdmins(){
         return (new \yii\db\Query())
             ->select('name,surname,middle_name,email')

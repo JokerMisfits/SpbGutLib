@@ -8,6 +8,13 @@ use yii\helpers\Html;
 /* @var $subjects */
 
 ?>
+
+<style>
+    .books-update{
+        margin-top: 50px;
+    }
+</style>
+
 <div class="books-update">
 
     <?= $this->render('_form', [

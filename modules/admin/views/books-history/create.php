@@ -8,9 +8,14 @@ use yii\helpers\Html;
 /* @var $people */
 
 $this->title = 'Добавить запись';
-$this->params['breadcrumbs'][] = ['label' => 'Books Histories', 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
 ?>
+
+<style>
+    body{
+        margin-top: 50px;
+    }
+</style>
+
 <div class="books-history-create">
 
     <h1 class="text-center"><?= Html::encode($this->title) ?></h1>

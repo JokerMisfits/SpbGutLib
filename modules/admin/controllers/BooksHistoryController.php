@@ -78,10 +78,11 @@ class BooksHistoryController extends AppAdminController
             $this->AccessDenied();
             return $this->goHome();
         }
-        $book = $this->getBooks()[$id];
+        $model = $this->findModel($id);
+        $book = $this->getBook($model->book_id);
         return $this->render('view', [
-            'model' => $this->findModel($id),
-            'book' => $book,
+            'model' => $model,
+            'book' => $book->name,
         ]);
     }
 
@@ -342,7 +343,14 @@ class BooksHistoryController extends AppAdminController
 
     }
 
-    public function getBooks(){
+    private function getBook($id){
+        $book = Books::find()
+            ->where(['id' => $id])
+            ->one();
+        return $book;
+    }
+
+    private function getBooks(){
         $books = Books::find()->all();
         $count = count($books);
         $names = [];
@@ -351,7 +359,7 @@ class BooksHistoryController extends AppAdminController
         }
         return $names;
     }
-    public function getPeople(){
+    private function getPeople(){
         $people = People::find()->all();
         $count = count($people);
         $names = [];

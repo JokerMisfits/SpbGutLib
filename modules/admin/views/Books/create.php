@@ -8,9 +8,13 @@ use yii\helpers\Html;
 /* @var $subject */
 
 $this->title = 'Добавить книгу';
-$this->params['breadcrumbs'][] = ['label' => 'Books', 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
 ?>
+
+<style>
+    body{
+        margin-top: 50px;
+    }
+</style>
 
 <div class="books-create">
 

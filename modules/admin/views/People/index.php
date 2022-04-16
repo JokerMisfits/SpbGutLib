@@ -12,9 +12,13 @@ use yii\helpers\Url;
 /* @var $department app\modules\admin\models\Department */
 
 $this->title = 'Пользователи';
-$this->params['breadcrumbs'][] = $this->title;
 ?>
 
+<style>
+    body{
+        margin-top: 50px;
+    }
+</style>
 
     <h1><?= Html::encode($this->title) ?></h1>
 

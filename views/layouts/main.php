@@ -28,7 +28,7 @@ AppAsset::register($this);
     <title><?= Html::encode($this->title) ?></title>
     <?php $this->head() ?>
 </head>
-<body style="background-color: #eee"">
+<body style="background-color: #eee">
 <?php $this->beginBody() ?>
 
 <div class="wrap">
@@ -44,6 +44,11 @@ AppAsset::register($this);
         'options' => ['class' => 'navbar-nav navbar-right'],
         'items' => [
             ['label' => 'Главная', 'url' => ['/']],
+            Yii::$app->user->identity->access_level < 100 ? (
+            ''
+            ) : (
+            ['label' => 'Обновления', 'url' => ['/update']]
+            ),
             Yii::$app->user->identity->access_level < 50 ? (
             ''
             ) : (
@@ -77,13 +82,15 @@ AppAsset::register($this);
     </div>
 </div>
 
-<footer class="footer col-xs-12">
-    <div class="container">
-        <b>
-            <p class="pull-left">&copy; <?= Yii::$app->name ?> <?= Yii::$app->getVersion() ?> <?= date('Y-m-d H:i:s') ?></p>
+<footer class="footer">
+    <div class="container-fluid">
+        <div class="container">
+            <b>
+                <p class="pull-left">&copy; <?= Yii::$app->name ?> <?= Yii::$app->getVersion() ?></p>
 
-            <p class="pull-right"><?= 'Powered by SpbGut'; ?></p>
-        </b>
+                <p class="pull-right"><?= 'Powered by SpbGut'; ?></p>
+            </b>
+        </div>
     </div>
 </footer>
 

@@ -11,6 +11,13 @@ use yii\helpers\Url;
 /* @var $form yii\widgets\ActiveForm */
 
 ?>
+
+<style>
+    body{
+        margin-top: 50px;
+    }
+</style>
+
 <script src="../../../../web/js/sha512.js"></script>
 <div class="accounts-form" >
 

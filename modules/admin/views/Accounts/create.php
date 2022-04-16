@@ -8,9 +8,14 @@ use yii\helpers\Html;
 /* @var $level */
 
 $this->title = 'Регистрация пользователя';
-$this->params['breadcrumbs'][] = ['label' => 'Accounts', 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
 ?>
+
+<style>
+    body{
+        margin-top: 50px;
+    }
+</style>
+
 <div class="accounts-create">
 
     <h1 class="text-center"><?= Html::encode($this->title) ?></h1>

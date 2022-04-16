@@ -6,9 +6,14 @@ use yii\helpers\Html;
 /* @var $model app\modules\admin\models\Department */
 
 $this->title = 'Добавить кафедру';
-$this->params['breadcrumbs'][] = ['label' => 'Departments', 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
 ?>
+
+<style>
+    body{
+        margin-top: 50px;
+    }
+</style>
+
 <div class="department-create">
 
     <h1 class="text-center"><?= Html::encode($this->title) ?></h1>

@@ -12,8 +12,13 @@ use yii\helpers\ArrayHelper;
 /* @var $active app\modules\admin\models\BooksHistory */
 /* @var $count */
 $this->title = 'Заявки';
-$this->params['breadcrumbs'][] = $this->title;
 ?>
+
+<style>
+    body{
+        margin-top: 50px;
+    }
+</style>
 
     <h1><?= Html::encode($this->title) ?></h1>
 

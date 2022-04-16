@@ -7,10 +7,15 @@ use yii\widgets\DetailView;
 /* @var $model app\modules\admin\models\BooksSubjects */
 
 $this->title = $model->name;
-$this->params['breadcrumbs'][] = ['label' => 'Books Subjects', 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
+
+<style>
+    body{
+        margin-top: 50px;
+    }
+</style>
+
 <div class="books-subjects-view">
 
     <h1><?= Html::encode($this->title) ?></h1>

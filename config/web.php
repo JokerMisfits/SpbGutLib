@@ -2,11 +2,11 @@
 
 $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/db.php';
-
+date_default_timezone_set('Europe/Moscow');
 $config = [
     'id' => 'basic',
     'name' => 'LitDB',
-    'version' => 'Alpha 0.02',
+    'version' => 'Alpha 0.03',
     'basePath' => dirname(__DIR__),
     'language' => 'ru-Ru',
     'modules' => [
@@ -58,9 +58,19 @@ $config = [
             'showScriptName' => false,
             'suffix' => '',
             'rules' => [
-                '<action:(about|contact|login)>' => 'site/<action>',
+                '<action:(about|contact|login|update)>' => 'site/<action>',
                 '<action:(create|read|update|delete)>' => 'admin/<action>',
             ],
+        ],
+        'elasticsearch' => [
+            'class' => 'yii\elasticsearch\Connection',
+//            'nodes' => [
+//                ['http_address' => '127.0.0.1:9200'],
+                //настройте несколько хостов, если у вас есть кластер
+//            ],
+            // установите autodetectCluster = false, чтобы не определять адреса узлов в кластере автоматически
+            // 'autodetectCluster' => false,
+            'dslVersion' => 7, // по умолчанию - 5
         ],
     ],
     'params' => $params,

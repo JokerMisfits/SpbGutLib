@@ -4,11 +4,14 @@ use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $model app\modules\admin\models\Department */
-
-$this->params['breadcrumbs'][] = ['label' => 'Departments', 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->name, 'url' => ['view', 'id' => $model->id]];
-$this->params['breadcrumbs'][] = 'Update';
 ?>
+
+<style>
+    .department-update{
+        margin-top: 50px;
+    }
+</style>
+
 <div class="department-update">
 
     <h1><?= Html::encode($this->title) ?></h1>

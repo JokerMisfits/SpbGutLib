@@ -62,6 +62,8 @@ class Accounts extends \yii\db\ActiveRecord
             [['username'], 'string', 'max' => 32],
             [['password', 'auth_key', 'email'], 'string', 'max' => 255],
             [['name', 'surname', 'middle_name'], 'string', 'max' => 20],
+            [['registration_timestamp'], 'string', 'max' => 12],
+            [['last_activity_timestamp'], 'string', 'max' => 12],
             [['username'], 'unique'],
             [['pass_number'], 'unique'],
             [['email'], 'unique'],

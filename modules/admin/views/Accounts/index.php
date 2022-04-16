@@ -11,9 +11,14 @@ use yii\grid\GridView;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 $this->title = 'Аккаунты';
-$this->params['breadcrumbs'][] = $this->title;
 ?>
 
+
+<style>
+    body{
+        margin-top: 50px;
+    }
+</style>
 
     <h1><?= Html::encode($this->title) ?></h1>
 
@@ -32,8 +37,8 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
             'username',
-            'name',
             'surname',
+            'name',
             'middle_name',
             'pass_number',
             [

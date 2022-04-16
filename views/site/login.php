@@ -10,23 +10,23 @@ use yii\bootstrap\ActiveForm;
 
 $this->title = 'Авторизация';
 ?>
+
 <script src="../../web/js/sha512.js"></script>
 <div class="container-fluid col-xs-12">
     <div class="site-login container-fluid">
-            <div class="col-md-offset-5 col-xs-offset-4">
-                <img src="../../web/images/logo_sut.png" alt="" style="width: 180px">
+            <div style="text-align: center" class="col-xs-12">
+                <img src="../../web/images/logo_sut.png" class="container col-xs-12 col-sm-8 col-sm-offset-2 col-md-4 col-md-offset-4" alt="">
             </div>
-            <div class="col-lg-offset-4">
+            <div style="margin-top: 100px;">
                     <?php $form = ActiveForm::begin([
                         'id' => 'login-form',
                         'options' => [
                                 'autocomplete' => 'off',
-                                //'style' => 'background-color: white;border-radius: 15px; padding: 15px',
                         ],
                         'layout' => 'horizontal',
                         'fieldConfig' => [
-                            'template' => "{label}\n<div class=\"col-lg-5\">{input}</div>\n<div class=\"col-lg-7 col-lg-offset-1\">{error}</div>",
-                            'labelOptions' => ['class' => 'col-lg-1 control-label'],
+                            'template' => "{label}\n<div class=\"col-sm-8 col-md-4\">{input}</div>\n<div class=\"col-sm-8 col-sm-offset-2 col-md-7 col-md-offset-4\">{error}</div>",
+                            'labelOptions' => ['class' => 'col-sm-1 col-sm-offset-1 col-md-offset-3 control-label'],
                         ],
                         'class' => 'd-flex justify-content-center',
 
@@ -42,11 +42,11 @@ $this->title = 'Авторизация';
                         ])->passwordInput() ?>
 
                         <?= $form->field($model, 'rememberMe')->checkbox([
-                            'template' => "<div class=\"col-lg-offset-1 col-lg-3\">{input} {label}</div>\n<div class=\"col-lg-8\">{error}</div>",
+                            'template' => "<div class=\"col-sm-8 col-sm-offset-2 col-md-offset-4 col-md-4\">{input} {label}</div>\n<div class=\"col-md-8\">{error}</div>",
                         ]) ?>
                 </div>
                 <div class="form-group">
-                        <?= Html::submitButton('Войти', ['class' => 'btn btn-warning col-xs-12 col-lg-4 col-lg-offset-4', 'name' => 'login-button']) ?>
+                        <?= Html::submitButton('Войти', ['class' => 'btn btn-warning col-xs-12 col-sm-8 col-sm-offset-2 col-md-4 col-md-offset-4', 'name' => 'login-button']) ?>
                 </div>
 
             <?php ActiveForm::end(); ?>

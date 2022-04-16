@@ -10,6 +10,12 @@ use yii\helpers\Url;
 /* @var $depart */
 ?>
 
+<style>
+    body{
+        margin-top: 50px;
+    }
+</style>
+
 <div class="people-form">
 
     <?php $form = ActiveForm::begin([

@@ -1,3 +1,6 @@
 footer{
     font-weight: bold;
 }
+body{
+    max-height: calc(100vh - 50px);
+}

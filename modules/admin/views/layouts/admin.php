@@ -50,7 +50,7 @@ $this->registerCssFile("@web/css/admin.css");
     <?php
     NavBar::begin([
         'brandLabel' => Yii::$app->name,
-        'brandUrl' => '/admin',
+        'brandUrl' => '/',
         'options' => [
             'class' => 'navbar-inverse navbar-fixed-top',
         ],
@@ -59,46 +59,46 @@ $this->registerCssFile("@web/css/admin.css");
         echo Nav::widget([
             'options' => ['class' => 'navbar-nav navbar-right'],
             'items' => [
-                ['label' => 'Home', 'url' => Url::to('/')],
+                ['label' => 'Профиль', 'url' => Url::to('/admin')],
 
                 Yii::$app->user->identity->access_level < 50 ? ('') : (
                 [
-                    'label' => 'Accounts',
+                    'label' => 'Аккаунты',
                     'items' => [
-                        ['label' => 'Create', 'url' => Url::to('/admin/accounts/create/')],
-                        ['label' => 'Read', 'url' => Url::to('/admin/accounts/index')],
+                        ['label' => 'Создать', 'url' => Url::to('/admin/accounts/create/')],
+                        ['label' => 'Просмотр', 'url' => Url::to('/admin/accounts/index')],
                     ],
                 ]),
 
                 Yii::$app->user->identity->access_level < 50 ? ('') : (
                 [
-                    'label' => 'Books',
+                    'label' => 'Книги',
                     'items' => [
-                        ['label' => 'Books', 'url' => Url::to('/admin/books')],
-                        ['label' => 'Categories', 'url' => Url::to('/admin/books-categories')],
-                        ['label' => 'Subjects', 'url' => Url::to('/admin/books-subjects')],
-                        ['label' => 'Tasks', 'url' => Url::to('/admin/books-history')],
+                        ['label' => 'Книги', 'url' => Url::to('/admin/books')],
+                        ['label' => 'Категории', 'url' => Url::to('/admin/books-categories')],
+                        ['label' => 'Тематики', 'url' => Url::to('/admin/books-subjects')],
+                        ['label' => 'Заявки', 'url' => Url::to('/admin/books-history')],
                     ],
                 ]),
 
                 Yii::$app->user->identity->access_level < 50 ? (
-                ['label' => 'Books', 'url' => Url::to('/admin/books')]) : (''),
+                ['label' => 'Книги', 'url' => Url::to('/admin/books')]) : (''),
 
                 Yii::$app->user->identity->access_level < 100 ? ('') : (
                 [
-                    'label' => 'Departments',
+                    'label' => 'Кафедры',
                     'items' => [
-                        ['label' => 'Create', 'url' => Url::to('/admin/departments/create')],
-                        ['label' => 'Read', 'url' => Url::to('/admin/departments')],
+                        ['label' => 'Создать', 'url' => Url::to('/admin/departments/create')],
+                        ['label' => 'Просмотр', 'url' => Url::to('/admin/departments')],
                     ],
                 ]),
 
                 Yii::$app->user->identity->access_level < 50 ? ('') : (
                 [
-                    'label' => 'Users',
+                    'label' => 'Пользователи',
                     'items' => [
-                        ['label' => 'Create', 'url' => Url::to('/admin/people/create')],
-                        ['label' => 'Read', 'url' => Url::to('/admin/people')],
+                        ['label' => 'Создать', 'url' => Url::to('/admin/people/create')],
+                        ['label' => 'Просмотр', 'url' => Url::to('/admin/people')],
                     ],
                 ]),
 
@@ -123,7 +123,7 @@ $this->registerCssFile("@web/css/admin.css");
     }
     ?>
 
-    <div class="admin-layout container col-xs-12 col-lg-12">
+    <div class="admin-layout container-fluid">
         <?php try{
             echo Alert::widget();
         }
@@ -135,11 +135,15 @@ $this->registerCssFile("@web/css/admin.css");
     </div>
 </div>
 
-<footer class="footer col-xs-12">
-    <div class="container">
-            <p class="pull-left">&copy; <?= Yii::$app->name ?> <?= Yii::$app->getVersion() ?> <?= date('Y-m-d H:i:s') ?></p>
+<footer class="footer">
+    <div class="container-fluid">
+        <div class="container">
+            <b>
+                <p class="pull-left">&copy; <?= Yii::$app->name ?> <?= Yii::$app->getVersion() ?></p>
 
-            <p class="pull-right"><?= 'Powered by SpbGut'; ?></p>
+                <p class="pull-right"><?= 'Powered by SpbGut'; ?></p>
+            </b>
+        </div>
     </div>
 </footer>
 

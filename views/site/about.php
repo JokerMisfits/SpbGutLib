@@ -5,7 +5,7 @@
 use yii\helpers\Html;
 
 $this->title = 'Инструкции';
-$this->params['breadcrumbs'][] = $this->title;
+$emailForm = 'ФИО(Полностью)<br>Номер пропуска<br>Email<br>Кафедра';
 
 $close = '<svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <g stroke="none" stroke-width="1px" fill="none" fill-rule="evenodd" stroke-linecap="square">
@@ -16,53 +16,29 @@ $close = '<svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.
     </g>
 </svg>';
 ?>
-
+<script src="../../web/js/collapse.js"></script>
 <style>
     .site-about{
-        margin-top: 25px;
+        margin-top: 0px;
         font-size: 16px;
     }
-    .panel{
-        margin-top: 1px;
-        margin-bottom: 0;
+    .text-link{
+        max-width: 460px;
     }
-    .text-green{
-        color: green;
+    .mt-1{
+        margin-top: -15px;
     }
-    .text-red{
-        color: red;
-    }
-    .icon{
-        transition-duration: 0.6s;
-        transition-property: transform;
-        transform: translateY(-20%);
-        width: 24px;
-        height: 24px;
-    }
-    .icon:hover{
-        background-color: rgba(140, 129, 129, 0.2);
-        border-radius: 50%;
-    }
-    .icon-active{
-        transition-duration: 0.6s;
-        transition-property: transform;
-        transform: rotate(135deg);
-        width: 24px;
-        height: 24px;
-    }
-    .icon-active:hover{
-        background-color: rgba(140, 129, 129, 0.2);
-        border-radius: 50%;
+    .mt-2{
+        margin-top: -25px;
     }
 </style>
 <h1 class="text-center"><?= Html::encode($this->title) ?></h1>
-<div class="site-about col-xs-12">
-    <div class="col-xs-12 col-lg-10 col-md-8 col-md-offset-2 col-lg-offset-1">
-
+<div class="site-about">
+    <div class="container-fluid">
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h4 class="panel-title">
-                    <a data-toggle="collapse" id="iconContainer" href="#collapseOne_inner">Что нужно для регистрации? <p id="icon" class="pull-right icon"><?= $close ?></p></a>
+                    <a data-toggle="collapse" id="iconContainer" href="#collapseOne_inner"> <div class="text-link"> Что нужно для регистрации? </div> <p id="icon"  class="pull-right icon mt-1"><?= $close ?></p></a>
                 </h4>
             </div>
             <div id="collapseOne_inner" class="panel-collapse collapse">
@@ -71,7 +47,7 @@ $close = '<svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.
                     <?php
                     $count = count($admins);
                     for ($i = 0;$i < $count;$i++){
-                        echo $admins[$i]['surname'] . '&nbsp' . $admins[$i]['name'] . '&nbsp' . $admins[$i]['middle_name'] . '&nbsp' . '<br>' . '<span class="text-center text-info">' . $admins[$i]['email'] . '</span>' . '<br>';
+                        echo $admins[$i]['surname'] . '&nbsp' . $admins[$i]['name'] . '&nbsp' . $admins[$i]['middle_name'] . '&nbsp' . '<br>' . '<span class="text-center text-info">' . '<a href="mailto:'.$admins[$i]['email'].'?subject=LitDB Запрос на аккаунт&body='.$emailForm.'">'. $admins[$i]['email'] . '</a>' . '</span>' . '<br>';
                     }
                     ?>
                 </div>
@@ -81,12 +57,12 @@ $close = '<svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h4 class="panel-title">
-                    <a data-toggle="collapse" id="iconContainer1"  href="#collapseTwo_inner">Как создать нового пользователя? <p id="icon1" class="pull-right icon"><?= $close ?></p></a>
+                    <a data-toggle="collapse" id="iconContainer1"  href="#collapseTwo_inner"> <div class="text-link"> Как создать нового пользователя? </div> <p id="icon1" class="pull-right icon mt-1"><?= $close ?></p></a>
                 </h4>
             </div>
             <div id="collapseTwo_inner" class="panel-collapse collapse">
                 <div class="panel-body">
-                    <span> 1.Переходим во вкладку Управление </span><br>
+                    <span> 1.Переходим во вкладку Профиль</span><br>
                     <span> 2.Выбираем пункт меню Users->Create </span><br>
                     <span> 3.Заполняем все поля </span><br>
                     <span> 4.Нажимаем сохранить </span><br>
@@ -98,12 +74,12 @@ $close = '<svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h4 class="panel-title">
-                    <a data-toggle="collapse" id="iconContainer2" href="#collapseThird_inner">Как добавить новую книгу? <p id="icon2" class="pull-right icon"><?= $close ?></p></a>
+                    <a data-toggle="collapse" id="iconContainer2" href="#collapseThird_inner"> <div class="text-link"> Как добавить новую книгу? </div> <p id="icon2" class="pull-right icon mt-1"><?= $close ?></p></a>
                 </h4>
             </div>
             <div id="collapseThird_inner" class="panel-collapse collapse">
                 <div class="panel-body">
-                    <span> 1.Переходим во вкладку Управление</span><br>
+                    <span> 1.Переходим во вкладку Профиль</span><br>
                     <span> 2.Выбираем пункт меню Books->Books</span><br>
                     <span> 2.Нажимаем кнопку "Добавить новую книгу"</span><br>
                     <span> 3.Заполняем все поля</span><br>
@@ -116,12 +92,12 @@ $close = '<svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h4 class="panel-title">
-                    <a data-toggle="collapse" id="iconContainer3" href="#collapseFourth_inner">Как добавить новую категорию? <p id="icon3" class="pull-right icon"><?= $close ?></p></a>
+                    <a data-toggle="collapse" id="iconContainer3" href="#collapseFourth_inner"> <div class="text-link"> Как добавить новую категорию? </div> <p id="icon3" class="pull-right icon mt-1"><?= $close ?></p></a>
                 </h4>
             </div>
             <div id="collapseFourth_inner" class="panel-collapse collapse">
                 <div class="panel-body">
-                    <span> 1.Переходим во вкладку Управление</span><br>
+                    <span> 1.Переходим во вкладку Профиль</span><br>
                     <span> 2.Выбираем пункт меню Books->Categories</span><br>
                     <span> 2.Нажимаем кнопку "Добавить новую категорию"</span><br>
                     <span> 3.Заполняем все поля</span><br>
@@ -134,12 +110,12 @@ $close = '<svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h4 class="panel-title">
-                    <a data-toggle="collapse" id="iconContainer4" href="#collapseFifth_inner">Как добавить новую тематику? <p id="icon4" class="pull-right icon"><?= $close ?></p></a>
+                    <a data-toggle="collapse" id="iconContainer4" href="#collapseFifth_inner"> <div class="text-link"> Как добавить новую тематику? </div> <p id="icon4" class="pull-right icon mt-1"><?= $close ?></p></a>
                 </h4>
             </div>
             <div id="collapseFifth_inner" class="panel-collapse collapse">
                 <div class="panel-body">
-                    <span> 1.Переходим во вкладку Управление</span><br>
+                    <span> 1.Переходим во вкладку Профиль</span><br>
                     <span> 2.Выбираем пункт меню Books->Subjects</span><br>
                     <span> 2.Нажимаем кнопку "Добавить новую тематику"</span><br>
                     <span> 3.Заполняем все поля</span><br>
@@ -152,12 +128,12 @@ $close = '<svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h4 class="panel-title">
-                    <a data-toggle="collapse" id="iconContainer5" href="#collapseSixth_inner">Как добавить новую запись? <p id="icon5" class="pull-right icon"><?= $close ?></p></a>
+                    <a data-toggle="collapse" id="iconContainer5" href="#collapseSixth_inner"> <div class="text-link"> Как добавить новую запись? </div> <p id="icon5" class="pull-right icon mt-1"><?= $close ?></p></a>
                 </h4>
             </div>
             <div id="collapseSixth_inner" class="panel-collapse collapse">
                 <div class="panel-body">
-                    <span> 1.Переходим во вкладку Управление</span><br>
+                    <span> 1.Переходим во вкладку Профиль</span><br>
                     <span> 2.Выбираем пункт меню Books->Tasks</span><br>
                     <span> 2.Нажимаем кнопку "Добавить новую запись"</span><br>
                     <span> 3.Заполняем все поля</span><br>
@@ -171,7 +147,7 @@ $close = '<svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h4 class="panel-title">
-                    <a data-toggle="collapse" id="iconContainer6" href="#collapseSeventh_inner">Как удалить запись? <p id="icon6" class="pull-right icon"><?= $close ?></p></a>
+                    <a data-toggle="collapse" id="iconContainer6" href="#collapseSeventh_inner"> <div class="text-link"> Как удалить запись? </div> <p id="icon6" class="pull-right icon mt-1"><?= $close ?></p></a>
                 </h4>
             </div>
             <div id="collapseSeventh_inner" class="panel-collapse collapse">
@@ -188,12 +164,12 @@ $close = '<svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h4 class="panel-title">
-                    <a data-toggle="collapse" id="iconContainer7" href="#collapseEighth_inner">Как закрыть заявку? <p id="icon7" class="pull-right icon"><?= $close ?></p></a>
+                    <a data-toggle="collapse" id="iconContainer7" href="#collapseEighth_inner"> <div class="text-link"> Как закрыть заявку? </div> <p id="icon7" class="pull-right icon mt-1"><?= $close ?></p></a>
                 </h4>
             </div>
             <div id="collapseEighth_inner" class="panel-collapse collapse">
                 <div class="panel-body">
-                    <span> 1.Переходим во вкладку Управление</span><br>
+                    <span> 1.Переходим во вкладку Профиль</span><br>
                     <span> 2.Выбираем пункт меню Books->Tasks</span><br>
                     <span> 3.Нажимаем на ссылку "Закрыть заявку"</span><br>
                     <span> 4.Готово! </span><br>
@@ -205,12 +181,12 @@ $close = '<svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h4 class="panel-title">
-                    <a data-toggle="collapse" id="iconContainer8" href="#collapseNinth_inner">Как изменить заявку с уровнем доступа "Модератор"? <p id="icon8" class="pull-right icon"><?= $close ?></p></a>
+                    <a data-toggle="collapse" id="iconContainer8" href="#collapseNinth_inner"> <div class="text-link"> Как изменить заявку если у вас<br>Уровень доступа "Модератор"? </div> <p id="icon8" class="pull-right icon mt-2"><?= $close ?></p></a>
                 </h4>
             </div>
             <div id="collapseNinth_inner" class="panel-collapse collapse">
                 <div class="panel-body">
-                    <span> 1.Переходим во вкладку Управление</span><br>
+                    <span> 1.Переходим во вкладку Профиль</span><br>
                     <span> 2.Выбираем пункт меню Books->Tasks</span><br>
                     <span> 3.Нажимаем на ссылку "Закрыть заявку"</span><br>
                     <span> 4.Нажимаем кнопку "Добавить новую запись"</span><br>
@@ -225,7 +201,7 @@ $close = '<svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h4 class="panel-title">
-                    <a data-toggle="collapse" id="iconContainer9" href="#collapseTenth_inner">Чем отличается пользователь от аккаунта? <p id="icon9" class="pull-right icon"><?= $close ?></p></a>
+                    <a data-toggle="collapse" id="iconContainer9" href="#collapseTenth_inner"> <div class="text-link"> Чем отличается<br>Пользователь от аккаунта? </div> <p id="icon9" class="pull-right icon mt-2"><?= $close ?></p></a>
                 </h4>
             </div>
             <div id="collapseTenth_inner" class="panel-collapse collapse">
@@ -242,7 +218,7 @@ $close = '<svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h4 class="panel-title">
-                    <a data-toggle="collapse" id="iconContainer10" href="#collapseEleven_inner">Как изменить запись? <p id="icon10" class="pull-right icon"><?= $close ?></p></a>
+                    <a data-toggle="collapse" id="iconContainer10" href="#collapseEleven_inner"> <div class="text-link"> Как изменить запись? </div> <p id="icon10" class="pull-right icon mt-1"><?= $close ?></p></a>
                 </h4>
             </div>
             <div id="collapseEleven_inner" class="panel-collapse collapse">
@@ -259,12 +235,12 @@ $close = '<svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h4 class="panel-title">
-                    <a data-toggle="collapse" id="iconContainer11" href="#collapseTwelve_inner">Как посмотреть книги, которые взял пользователь? <p id="icon11" class="pull-right icon"><?= $close ?></p></a>
+                    <a data-toggle="collapse" id="iconContainer11" href="#collapseTwelve_inner"> <div class="text-link"> Как посмотреть книги<br>Которые взял пользователь?</div> <p id="icon11" class="pull-right icon mt-2"><?= $close ?></p></a>
                 </h4>
             </div>
             <div id="collapseTwelve_inner" class="panel-collapse collapse">
                 <div class="panel-body">
-                    <span> 1.Переходим во вкладку Управление</span><br>
+                    <span> 1.Переходим во вкладку Профиль</span><br>
                     <span> 2.Выбираем пункт меню Users->Read</span><br>
                     <span> 3.Находим нужного пользователя</span><br>
                     <span> 4.В колонке "Книги" если у него есть активные заявки на книги, будет доступна ссылка</span><br>
@@ -278,7 +254,7 @@ $close = '<svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h4 class="panel-title">
-                    <a data-toggle="collapse" id="iconContainer12" href="#collapseThirteenth_inner">Почему не получается удалить некоторые категории,тематики или кафедры? <p id="icon12" class="pull-right icon"><?= $close ?></p></a>
+                    <a data-toggle="collapse" id="iconContainer12" href="#collapseThirteenth_inner"> <div class="text-link">Почему не получается удалить:<br>Категории,тематики или кафедры?</div> <p id="icon12" class="pull-right icon mt-2"><?= $close ?></p></a>
                 </h4>
             </div>
             <div id="collapseThirteenth_inner" class="panel-collapse collapse">
@@ -292,173 +268,16 @@ $close = '<svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h4 class="panel-title">
-                    <a data-toggle="collapse" id="iconContainer13" href="#collapseFourteenth_inner">Столкнулись с проблемами или заметили ошибку? <p id="icon13" class="pull-right icon"><?= $close ?></p></a>
+                    <a data-toggle="collapse" id="iconContainer13" href="#collapseFourteenth_inner"> <div class="text-link"> Столкнулись с проблемами?<br>Свяжитесь с нами!</div> <p id="icon13" class="pull-right icon mt-2"><?= $close ?></p></a>
                 </h4>
             </div>
             <div id="collapseFourteenth_inner" class="panel-collapse collapse">
                 <div class="panel-body">
-                    <span> 1.Петрова Ольга Борисовна petromay@yandex.ru</span><br>
-                    <span> 2.Щецко Андрей Андреевич lpwalker87@mail.ru</span>
+                    <span> 1.Петрова Ольга Борисовна <span class="text-info"><a href="mailto:petromay@yandex.ru?subject=LitDB bug report&body=Опишите вашу проблему">petromay@yandex.ru</a></span></span><br>
+                    <span> 2.Щецко Андрей Андреевич <span class="text-info"><a href="mailto:lpwalker87@mail.ru?subject=LitDB bug report&body=Опишите вашу проблему">lpwalker87@mail.ru</a></span></span>
                 </div>
             </div>
         </div>
 
     </div>
 </div>
-
-<script>
-    $var = 0;
-    $var1 = 0;
-    $var2 = 0;
-    $var3 = 0;
-    $var4 = 0;
-    $var5 = 0;
-    $var6 = 0;
-    $var7 = 0;
-    $var8 = 0;
-    $var9 = 0;
-    $var10 = 0;
-    $var11 = 0;
-    $var12 = 0;
-    $var13 = 0;
-    $( "#iconContainer" ).on( "click", function() {
-        if($var %2 === 0){
-            $( "#icon" ).removeClass( "icon" ).addClass( "icon-active" );
-            $var++;
-        }
-        else{
-            $( "#icon" ).removeClass( "icon-active" ).addClass( "icon" );
-            $var++;
-        }
-    });
-    $( "#iconContainer1" ).on( "click", function() {
-        if($var1 %2 === 0){
-            $( "#icon1" ).removeClass( "icon" ).addClass( "icon-active" );
-            $var1++;
-        }
-        else{
-            $( "#icon1" ).removeClass( "icon-active" ).addClass( "icon" );
-            $var1++;
-        }
-    });
-    $( "#iconContainer2" ).on( "click", function() {
-        if($var2 %2 === 0){
-            $( "#icon2" ).removeClass( "icon" ).addClass( "icon-active" );
-            $var2++;
-        }
-        else{
-            $( "#icon2" ).removeClass( "icon-active" ).addClass( "icon" );
-            $var2++;
-        }
-    });
-    $( "#iconContainer3" ).on( "click", function() {
-        if($var3 %2 === 0){
-            $( "#icon3" ).removeClass( "icon" ).addClass( "icon-active" );
-            $var3++;
-        }
-        else{
-            $( "#icon3" ).removeClass( "icon-active" ).addClass( "icon" );
-            $var3++;
-        }
-    });
-    $( "#iconContainer4" ).on( "click", function() {
-        if($var4 %2 === 0){
-            $( "#icon4" ).removeClass( "icon" ).addClass( "icon-active" );
-            $var4++;
-        }
-        else{
-            $( "#icon4" ).removeClass( "icon-active" ).addClass( "icon" );
-            $var4++;
-        }
-    });
-    $( "#iconContainer5" ).on( "click", function() {
-        if($var5 %2 === 0){
-            $( "#icon5" ).removeClass( "icon" ).addClass( "icon-active" );
-            $var5++;
-        }
-        else{
-            $( "#icon5" ).removeClass( "icon-active" ).addClass( "icon" );
-            $var5++;
-        }
-    });
-    $( "#iconContainer6" ).on( "click", function() {
-        if($var6 %2 === 0){
-            $( "#icon6" ).removeClass( "icon" ).addClass( "icon-active" );
-            $var6++;
-        }
-        else{
-            $( "#icon6" ).removeClass( "icon-active" ).addClass( "icon" );
-            $var6++;
-        }
-    });
-    $( "#iconContainer7" ).on( "click", function() {
-        if($var7 %2 === 0){
-            $( "#icon7" ).removeClass( "icon" ).addClass( "icon-active" );
-            $var7++;
-        }
-        else{
-            $( "#icon7" ).removeClass( "icon-active" ).addClass( "icon" );
-            $var7++;
-        }
-    });
-    $( "#iconContainer8" ).on( "click", function() {
-        if($var8 %2 === 0){
-            $( "#icon8" ).removeClass( "icon" ).addClass( "icon-active" );
-            $var8++;
-        }
-        else{
-            $( "#icon8" ).removeClass( "icon-active" ).addClass( "icon" );
-            $var8++;
-        }
-    });
-    $( "#iconContainer9" ).on( "click", function() {
-        if($var9 %2 === 0){
-            $( "#icon9" ).removeClass( "icon" ).addClass( "icon-active" );
-            $var9++;
-        }
-        else{
-            $( "#icon9" ).removeClass( "icon-active" ).addClass( "icon" );
-            $var9++;
-        }
-    });
-    $( "#iconContainer10" ).on( "click", function() {
-        if($var10 %2 === 0){
-            $( "#icon10" ).removeClass( "icon" ).addClass( "icon-active" );
-            $var10++;
-        }
-        else{
-            $( "#icon10" ).removeClass( "icon-active" ).addClass( "icon" );
-            $var10++;
-        }
-    });
-    $( "#iconContainer11" ).on( "click", function() {
-        if($var11 %2 === 0){
-            $( "#icon11" ).removeClass( "icon" ).addClass( "icon-active" );
-            $var11++;
-        }
-        else{
-            $( "#icon11" ).removeClass( "icon-active" ).addClass( "icon" );
-            $var11++;
-        }
-    });
-    $( "#iconContainer12" ).on( "click", function() {
-        if($var12 %2 === 0){
-            $( "#icon12" ).removeClass( "icon" ).addClass( "icon-active" );
-            $var12++;
-        }
-        else{
-            $( "#icon12" ).removeClass( "icon-active" ).addClass( "icon" );
-            $var12++;
-        }
-    });
-    $( "#iconContainer13" ).on( "click", function() {
-        if($var13 %2 === 0){
-            $( "#icon13" ).removeClass( "icon" ).addClass( "icon-active" );
-            $var13++;
-        }
-        else{
-            $( "#icon13" ).removeClass( "icon-active" ).addClass( "icon" );
-            $var13++;
-        }
-    });
-</script>

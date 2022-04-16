@@ -11,6 +11,12 @@ use yii\helpers\Url;
 /* @var $form yii\widgets\ActiveForm */
 ?>
 
+<style>
+    body{
+        margin-top: 50px;
+    }
+</style>
+
 <div class="books-history-form">
 
     <?php $form = ActiveForm::begin([

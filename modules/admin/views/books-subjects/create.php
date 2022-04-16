@@ -6,9 +6,14 @@ use yii\helpers\Html;
 /* @var $model app\modules\admin\models\BooksSubjects */
 
 $this->title = 'Добавить тематику';
-$this->params['breadcrumbs'][] = ['label' => 'Books Subjects', 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
 ?>
+
+<style>
+    body{
+        margin-top: 50px;
+    }
+</style>
+
 <div class="books-subjects-create">
 
     <h1 class="text-center"><?= Html::encode($this->title) ?></h1>

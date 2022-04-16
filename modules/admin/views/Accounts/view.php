@@ -7,10 +7,15 @@ use yii\widgets\DetailView;
 /* @var $model app\modules\admin\models\Accounts */
 
 $this->title = $model->surname . ' ' . $model->name . ' ' . $model->middle_name;
-$this->params['breadcrumbs'][] = ['label' => 'Accounts', 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
+
+<style>
+    body{
+        margin-top: 50px;
+    }
+</style>
+
 <div class="accounts-view">
 
     <h1><?= Html::encode($this->title) ?></h1>

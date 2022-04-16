@@ -10,6 +10,13 @@ use yii\helpers\Url;
 /* @var $categories */
 /* @var $subjects */
 ?>
+
+<style>
+    body{
+        margin-top: 50px;
+    }
+</style>
+
 <div class="books-form">
 
     <?php $form = ActiveForm::begin([
