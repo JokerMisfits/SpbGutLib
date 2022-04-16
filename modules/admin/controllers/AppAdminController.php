@@ -3,6 +3,7 @@
 
 namespace app\modules\admin\controllers;
 
+use yii\base\Model;
 use yii\web\Controller;
 use yii\filters\AccessControl;
 use Yii;
@@ -31,8 +32,24 @@ class AppAdminController extends Controller
     }
 
     public static function AccessDenied(){
-        return Yii::$app->getSession()->setFlash('error', 'Доступ запрещен');
+        Yii::$app->getSession()->setFlash('error', 'Доступ запрещен!');
     }
+
+    public function checkWhiteSpaces(Model $model, $attributes){
+        $count = count($attributes);
+        $check = true;
+        for($i = 0; $i < $count; $i++){
+            $attribute = $attributes[$i];
+            $value = $model->$attribute;
+            if($value[0] == ' '){
+                $label = $model->getAttributeLabel($attributes[$i]);
+                Yii::$app->getSession()->addFlash('error',"Удалите первый пробел в поле '$label'!");
+                $check = false;
+            }
+        }
+        return $check;
+    }
+
     public function beforeAction($action)
     {
         if(Yii::$app->user->isGuest == false){

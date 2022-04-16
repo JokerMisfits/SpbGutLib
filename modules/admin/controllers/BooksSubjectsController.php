@@ -96,8 +96,22 @@ class BooksSubjectsController extends AppAdminController
             return ActiveForm::validate($model);
         }
         if ($model->load(Yii::$app->request->post())) {
+            $attributes = ['name'];
+            if($this->checkWhiteSpaces($model, (array)$attributes) == false){
+                return $this->render('create', ['model' => $model]);
+            }
+            $transaction = Yii::$app->db->beginTransaction();
             try {
-                $model->save();
+                if($model->save()){
+                    Yii::$app->getSession()->setFlash('success', 'Тематика успешно сохранена.');
+                    $transaction->commit();
+                    return $this->redirect(['view', 'id' => $model->id]);
+                }
+                else{
+                    Yii::$app->getSession()->setFlash('error', print_r($model->errors,true));
+                    $transaction->rollBack();
+                    return $this->redirect('/admin/books-subjects');
+                }
             }
             catch (\Exception|\Throwable $exception){
                 Yii::$app->getSession()->setFlash('error', $exception->getMessage());
@@ -105,7 +119,6 @@ class BooksSubjectsController extends AppAdminController
                     'model' => $model,
                 ]);
             }
-            return $this->redirect(['view', 'id' => $model->id]);
         }
 
         return $this->render('create', [
@@ -132,6 +145,10 @@ class BooksSubjectsController extends AppAdminController
             return ActiveForm::validate($model);
         }
         if ($model->load(Yii::$app->request->post())) {
+            $attributes = ['name'];
+            if($this->checkWhiteSpaces($model, (array)$attributes) == false){
+                return $this->render('update', ['model' => $model]);
+            }
             $oldModel = BooksSubjects::find()->where(['id' => $model->id])->one();
             if($model->toArray() == $oldModel->toArray()){
                 Yii::$app->getSession()->setFlash('error', 'Измените данные перед отправкой!');
@@ -139,8 +156,18 @@ class BooksSubjectsController extends AppAdminController
                     'model' => $model,
                 ]);
             }
+            $transaction = Yii::$app->db->beginTransaction();
             try {
-                $model->save();
+                if($model->save()){
+                    Yii::$app->getSession()->setFlash('success', 'Изменения успешно сохранены.');
+                    $transaction->commit();
+                    return $this->redirect(['view', 'id' => $model->id]);
+                }
+                else{
+                    Yii::$app->getSession()->setFlash('error', print_r($model->errors,true));
+                    $transaction->rollBack();
+                    return $this->redirect('/admin/books-subjects');
+                }
             }
             catch (\Exception|\Throwable $exception){
                 Yii::$app->getSession()->setFlash('error', $exception->getMessage());
@@ -148,7 +175,6 @@ class BooksSubjectsController extends AppAdminController
                     'model' => $model,
                 ]);
             }
-            return $this->redirect(['view', 'id' => $model->id]);
         }
 
         return $this->render('update', [
@@ -172,19 +198,28 @@ class BooksSubjectsController extends AppAdminController
         $books = Books::find()->where(['subject_id' => $id])->one();
         if($books == null){
             $model = $this->findModel($id);
+            $transaction = Yii::$app->db->beginTransaction();
             try {
-                $model->delete();
+                if($model->delete()){
+                    Yii::$app->getSession()->setFlash('success', 'Тематика [' . $model->name . '] успешно удалена.' );
+                    $transaction->commit();
+                    return $this->redirect('/admin/books-subjects');
+                }
+                else{
+                    Yii::$app->getSession()->setFlash('error', print_r($model->errors,true));
+                    $transaction->rollBack();
+                    return $this->redirect('/admin/books-subjects');
+                }
             }
             catch (\Exception|\Throwable $exception){
                 Yii::$app->getSession()->setFlash('error', $exception->getMessage());
-                return $this->redirect(Url::to(['/admin/books-subjects']));
+                return $this->redirect('/admin/books-subjects');
             }
         }
         else{
             Yii::$app->getSession()->setFlash('error', 'Данная тематика еще используется! '. Html::a(Html::encode('Перейти к данным книгам'), Url::to(['books/', 'BooksSearch[subject_id]' => $id])));
-            return $this->redirect(Url::to(['/admin/books-subjects']));
+            return $this->redirect('/admin/books-subjects');
         }
-        return $this->redirect(Url::to(['/admin/books-subjects']));
     }
 
     /**
@@ -200,6 +235,6 @@ class BooksSubjectsController extends AppAdminController
             return $model;
         }
 
-        throw new NotFoundHttpException('The requested page does not exist.');
+        throw new NotFoundHttpException('Запрашиваемая страница не найдена.');
     }
 }

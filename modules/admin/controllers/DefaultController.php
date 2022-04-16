@@ -17,12 +17,19 @@ use Yii;
  */
 class DefaultController extends AppAdminController
 {
+
     /**
      * Renders the index view for the module
      * @return string
      */
     public function actionIndex()
     {
+
+        if(Yii::$app->user->isGuest == true){
+            $this->AccessDenied();
+            return $this->goHome();
+        }
+
         return $this->render('index', [
             'access' => $this->getAccess(Yii::$app->user->identity->access_level),
             'task' => $this->getTask(Yii::$app->user->identity->parent_id),
@@ -53,20 +60,23 @@ class DefaultController extends AppAdminController
     }
     private function getStatus($id){
         if($id == Yii::$app->user->identity->id){
-            return '<span class="text-success">online</span>';
+            return '<span class="text-success">Online</span>';
         }
         else{
             $status = Accounts::find()
                 ->where(['id' => $id])
                 ->one();
             $status = $status['last_activity_timestamp'];
+            if($status == null){
+                return '<b class="text-danger">Offline</b>';
+            }
             $timestamp = time();
             $difference = $timestamp - $status;
             if($difference <= 900){
-                return '<span class="text-success">online</span>';
+                return '<b class="text-success">Online</b>';
             }
             else{
-                return '<span class="text-danger">' . $status . '</span>';
+                return '<b class="text-danger">' . $status . '</b>';
             }
         }
     }

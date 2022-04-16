@@ -34,12 +34,12 @@ use yii\helpers\Url;
     <?php
     if((Yii::$app->controller->action->id == 'create' || Yii::$app->controller->action->id == 'update') && (isset(Yii::$app->user->identity->access_level) && (Yii::$app->user->identity->access_level >= 50))){
         if(Yii::$app->controller->action->id == 'create'){
-            echo $form->field($model, 'book_id',['enableAjaxValidation' => true, 'enableClientValidation' => false])->dropDownList($books,['prompt' => 'Для поиска начинайте набирать название'])->label('Книга');
-            echo $form->field($model, 'user_id',['enableAjaxValidation' => true, 'enableClientValidation' => false])->dropDownList($people,['prompt' => 'Для поиска начинайте набирать ФИО'])->label('Пользователь');
+            echo $form->field($model, 'book_id',['enableAjaxValidation' => true, 'enableClientValidation' => false])->dropDownList($books,['prompt' => 'Для поиска начните набирать название'])->label('Книга');
+            echo $form->field($model, 'user_id',['enableAjaxValidation' => true, 'enableClientValidation' => false])->dropDownList($people,['prompt' => 'Для поиска начните набирать ФИО'])->label('Пользователь');
         }
-        echo $form->field($model, 'comment',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textarea(['rows' => 2]);
+        echo $form->field($model, 'comment',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textarea(['rows' => 2, 'placeholder' => 'Введите комментарий']);
         if(Yii::$app->controller->action->id == 'create'){
-            echo $form->field($model, 'count',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textInput();
+            echo $form->field($model, 'count',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textInput(['placeholder' => 'Введите количество книг', 'value' => 1]);
         }
     }
     ?>

@@ -9,7 +9,6 @@ use yii\base\Model;
  * ContactForm is the model behind the contact form.
  */
 
-// Можно использовать, как основу контактной формы
 class ContactForm extends Model
 {
     public $name;
@@ -18,19 +17,25 @@ class ContactForm extends Model
     public $body;
     public $verifyCode;
 
-
     /**
      * @return array the validation rules.
      */
     public function rules()
     {
         return [
-            // name, email, subject and body are required
-            [['name', 'email', 'subject', 'body'], 'required'],
-            // email has to be a valid email address
+            ['name', 'required', 'message' => 'Необходимо заполнить ФИО.'],
+            ['name', 'string', 'min' => 6],
+            ['name', 'string', 'max' => 255],
+            ['email', 'required', 'message' => 'Необходимо заполнить Email.'],
+            ['subject', 'required', 'message' => 'Необходимо выбрать тему обращения.'],
+            ['body', 'required', 'message' => 'Необходимо заполнить текст.'],
+            ['body', 'string', 'min' => 10],
+            ['body', 'string', 'max' => 1000],
             ['email', 'email'],
-            // verifyCode needs to be entered correctly
+            ['email', 'string', 'min' => 6],
+            ['email', 'string', 'max' => 255],
             ['verifyCode', 'captcha'],
+            [['name', 'email', 'body'], 'trim'],
         ];
     }
 
@@ -40,7 +45,11 @@ class ContactForm extends Model
     public function attributeLabels()
     {
         return [
-            'verifyCode' => 'Verification Code',
+            'name' => 'ФИО',
+            'email' => 'Email',
+            'subject' => 'Причина обращения',
+            'body' => 'Сообщение',
+            'verifyCode' => 'Код подтверждения',
         ];
     }
 
@@ -52,6 +61,7 @@ class ContactForm extends Model
     public function contact($email)
     {
         if ($this->validate()) {
+            $this->body = $this->name . "\n" .  $this->body;
             Yii::$app->mailer->compose()
                 ->setTo($email)
                 ->setFrom([Yii::$app->params['senderEmail'] => Yii::$app->params['senderName']])

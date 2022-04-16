@@ -21,15 +21,37 @@ $this->title = $model->surname . ' ' . $model->name . ' ' . $model->middle_name;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Редактировать данные', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Удалить аккаунт', ['delete', 'id' => $model->id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Вы уверены, что хотите удалить данный аккаунт?',
-                'method' => 'post',
-            ],
-        ]) ?>
-        <?= Html::a( 'Назад', '../accounts', ['class' => 'btn btn-warning']); ?>
+        <?php
+            if((isset(Yii::$app->user->identity->access_level) && (Yii::$app->user->identity->access_level >= 50))){
+                if(Yii::$app->user->identity->access_level == 50){
+                    if(Yii::$app->user->identity->id == $model->id){
+                        echo Html::a('Редактировать данные', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
+                    }
+                    elseif(Yii::$app->user->identity->access_level > $model->access_level){
+                        echo Html::a('Редактировать данные', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
+                    }
+                }
+                elseif(Yii::$app->user->identity->access_level == 100){
+                    if(Yii::$app->user->identity->id == $model->id){
+                        echo Html::a('Редактировать данные', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
+                    }
+                    else{
+                        if(Yii::$app->user->identity->access_level > $model->access_level){
+                            echo Html::a('Редактировать данные', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
+                            echo Html::a('Удалить аккаунт', ['delete', 'id' => $model->id], [
+                                'class' => 'btn btn-danger',
+                                'data' => [
+                                    'confirm' => 'Вы уверены, что хотите удалить данный аккаунт?',
+                                    'method' => 'post',
+                                ],
+                            ]);
+                        }
+                    }
+                }
+            }
+            echo Html::a( 'Назад', '/admin/accounts', ['class' => 'btn btn-warning']);
+
+        ?>
     </p>
 
     <?php try {
@@ -42,6 +64,7 @@ $this->title = $model->surname . ' ' . $model->name . ' ' . $model->middle_name;
                 'middle_name',
                 'pass_number',
                 'email',
+                'phone',
                 [
                     'attribute' => 'department_id',
                     'value' => function ($data){
@@ -53,6 +76,26 @@ $this->title = $model->surname . ' ' . $model->name . ' ' . $model->middle_name;
                     'value' => function ($data){
                         return $data->access;
                     }
+                ],
+                [
+                    'attribute' => 'registration_timestamp',
+                    'value' => function($data){ return date("d.m.Y H:i:s",$data->registration_timestamp);},
+                ],
+                [
+                    'attribute' => 'last_activity_timestamp',
+                    'value' => function($data){
+                        $timestamp = time();
+                        $last_activity = $data->last_activity_timestamp;
+                        if($last_activity == null){
+                            return "<b class='text-danger'>Offline</b>";
+                        }
+                        $difference = $timestamp -$last_activity;
+                        if($difference <= 900){
+                            return "<b class='text-success'>Online</b>";
+                        }
+                        return "<b class='text-danger'>Offline</b> с " . date("d.m.Y H:i:s",$data->last_activity_timestamp);
+                    },
+                    'format' => 'raw',
                 ],
             ],
         ]);

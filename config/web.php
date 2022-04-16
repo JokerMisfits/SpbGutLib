@@ -6,7 +6,7 @@ date_default_timezone_set('Europe/Moscow');
 $config = [
     'id' => 'basic',
     'name' => 'LitDB',
-    'version' => 'Alpha 0.03',
+    'version' => 'Alpha 0.04',
     'basePath' => dirname(__DIR__),
     'language' => 'ru-Ru',
     'modules' => [
@@ -38,10 +38,15 @@ $config = [
         ],
         'mailer' => [
             'class' => 'yii\swiftmailer\Mailer',
-            // send all mails to a file by default. You have to set
-            // 'useFileTransport' to false and configure a transport
-            // for the mailer to send real emails.
-            'useFileTransport' => true,
+            'useFileTransport' => false,
+            'transport' => [
+                'class' => 'Swift_SmtpTransport',
+                'host' => 'smtp.mail.ru',
+                'username' => 'support@diamondxo.beget.tech',
+                'password' => 'JustifyContent092',
+                'port' => '465',
+                'encryption' => 'ssl',
+            ],
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
@@ -61,16 +66,6 @@ $config = [
                 '<action:(about|contact|login|update)>' => 'site/<action>',
                 '<action:(create|read|update|delete)>' => 'admin/<action>',
             ],
-        ],
-        'elasticsearch' => [
-            'class' => 'yii\elasticsearch\Connection',
-//            'nodes' => [
-//                ['http_address' => '127.0.0.1:9200'],
-                //настройте несколько хостов, если у вас есть кластер
-//            ],
-            // установите autodetectCluster = false, чтобы не определять адреса узлов в кластере автоматически
-            // 'autodetectCluster' => false,
-            'dslVersion' => 7, // по умолчанию - 5
         ],
     ],
     'params' => $params,

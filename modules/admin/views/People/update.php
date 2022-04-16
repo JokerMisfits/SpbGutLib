@@ -9,12 +9,6 @@ $this->title = 'Изменить пользователя: ' . $model->name;
 /* @var $depart */
 ?>
 
-<style>
-    .people-update{
-        margin-top: 50px;
-    }
-</style>
-
 <div class="people-update">
 
     <?= $this->render('_form', [

@@ -12,13 +12,13 @@ use yii\helpers\Url;
 
 AppAsset::register($this);
 $this->registerCssFile("@web/css/admin.css");
+$this->title = 'Профиль';
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
 
 <html lang="<?= Yii::$app->language ?>">
 <head>
-    <title><?= Yii::$app->name ?></title>
     <?php $this->registerLinkTag([
         'rel' => 'shortcut icon',
         'type' => 'image/x-icon',
@@ -65,8 +65,16 @@ $this->registerCssFile("@web/css/admin.css");
                 [
                     'label' => 'Аккаунты',
                     'items' => [
-                        ['label' => 'Создать', 'url' => Url::to('/admin/accounts/create/')],
-                        ['label' => 'Просмотр', 'url' => Url::to('/admin/accounts/index')],
+                        Yii::$app->user->identity->access_level == 100 ? (
+                        ['label' => 'Создать', 'url' => Url::to('/admin/accounts/create')]
+                        )
+                        :
+                        (
+                        ['label' => 'Просмотр', 'url' => Url::to('/admin/accounts')]
+                        ),
+                        Yii::$app->user->identity->access_level == 100 ? (
+                        ['label' => 'Просмотр', 'url' => Url::to('/admin/accounts')]
+                        ):(''),
                     ],
                 ]),
 
@@ -108,7 +116,7 @@ $this->registerCssFile("@web/css/admin.css");
                     '<li>'
                     . Html::beginForm(['/site/logout'], 'post')
                     . Html::submitButton(
-                        'Logout (' . Yii::$app->user->identity->name . ')',
+                        'Выйти (' . Yii::$app->user->identity->name . ')',
                         ['class' => 'btn btn-link logout']
                     )
                     . Html::endForm()

@@ -16,8 +16,12 @@ class BooksHistorySearch extends BooksHistory
     public function rules()
     {
         return [
-            [['id', 'book_id', 'user_id', 'active', 'count'], 'integer'],
-            [['date_from', 'date_end', 'comment'], 'safe'],
+            [['id', 'book_id', 'user_id', 'active'], 'integer'],
+            ['count', 'integer', 'min' => 0],
+            ['count', 'integer', 'max' => 999],
+            ['comment', 'string', 'max' => 255],
+            [['date_from', 'date_end'], 'string', 'max' => 30],
+            ['comment', 'trim'],
         ];
     }
 
@@ -66,11 +70,10 @@ class BooksHistorySearch extends BooksHistory
             return $dataProvider;
         }
 
-        // grid filtering conditions
+        // Фильтры поиска (Выпадающие меню + точные значения)
         $query->andFilterWhere([
             'id' => $this->id,
             'book_id' => $this->book_id,
-            'user_id' => $this->user_id,
             'active' => $this->active,
             'count' => $this->count,
         ]);

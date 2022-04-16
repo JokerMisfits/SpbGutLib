@@ -6,12 +6,6 @@ use yii\helpers\Html;
 /* @var $model app\modules\admin\models\Department */
 ?>
 
-<style>
-    .department-update{
-        margin-top: 50px;
-    }
-</style>
-
 <div class="department-update">
 
     <h1><?= Html::encode($this->title) ?></h1>

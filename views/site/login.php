@@ -50,7 +50,16 @@ $this->title = 'Авторизация';
                 </div>
 
             <?php ActiveForm::end(); ?>
-
+        <div class="row" style="margin-top: 55px;">
+            <div class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-4 col-md-offset-4 ">
+                <div class="col-xs-10 text-left" style="padding: 0">
+                    <span style="font-size: 14px">Или вы можете запросить аккаунт:</span s s>
+                </div>
+                <div class="col-xs-2 text-right" style="padding: 0;">
+                    <?= Html::a('Перейти', ['/contact?subjectId=0'], ['class' => 'text-link']) ?>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 

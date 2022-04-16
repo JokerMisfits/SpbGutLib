@@ -7,6 +7,7 @@ use yii\filters\AccessControl;
 use yii\web\Response;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
+use app\models\ContactForm;
 
 class SiteController extends AppController
 {
@@ -44,6 +45,9 @@ class SiteController extends AppController
         return [
             'error' => [
                 'class' => 'yii\web\ErrorAction',
+            ],
+            'captcha' => [
+                'class' => 'yii\captcha\CaptchaAction',
             ],
         ];
     }
@@ -99,23 +103,37 @@ class SiteController extends AppController
         return $this->goHome();
     }
 
-//    /**
-//     * Displays contact page.
-//     *
-//     * @return Response|string
-//     */
-//    public function actionContact()
-//    {
-//        $model = new ContactForm();
-//        if ($model->load(Yii::$app->request->post()) && $model->contact(Yii::$app->params['adminEmail'])) {
-//            Yii::$app->session->setFlash('contactFormSubmitted');
-//
-//            return $this->refresh();
-//        }
-//        return $this->render('contact', [
-//            'model' => $model,
-//        ]);
-//    }
+    /**
+     * Displays contact page.
+     *
+     * @return Response|string
+     */
+    public function actionContact($subjectId = null)
+    {
+        $model = new ContactForm();
+        if ($model->load(Yii::$app->request->post())) {
+            $subjectName = $this->getSubjects();
+            $model->subject = $subjectName[$model->subject];
+            if($model->contact(Yii::$app->params['adminEmail'])){
+                Yii::$app->session->setFlash('contactFormSubmitted');
+            }
+            return $this->refresh();
+        }
+        if(isset($subjectId) && $subjectId != null){
+            return $this->render('contact', [
+                'model' => $model,
+                'subjects' => $this->getSubjects(),
+                'selected' => $subjectId,
+            ]);
+        }
+        else{
+            return $this->render('contact', [
+                'model' => $model,
+                'subjects' => $this->getSubjects(),
+                'selected' => null,
+            ]);
+        }
+    }
 
     /**
      * Displays about page.
@@ -128,14 +146,13 @@ class SiteController extends AppController
             $this->AccessDenied();
             return $this->goHome();
         }
-        return $this->render('about',
-            [
+        return $this->render('about', [
             'admins' => $this->getAdmins(),
             ]);
 
     }
     public function actionUpdate(){
-        if (Yii::$app->user->identity->access_level < 100) {
+        if (Yii::$app->user->identity->access_level < 50) {
             $this->AccessDenied();
             return $this->goHome();
         }
@@ -148,5 +165,9 @@ class SiteController extends AppController
             ->from('accounts')
             ->where(['access_level' => 100])
             ->all();
+    }
+
+    private function getSubjects(){
+        return ['Получение аккаунта','Сообщение об ошибке'];
     }
 }

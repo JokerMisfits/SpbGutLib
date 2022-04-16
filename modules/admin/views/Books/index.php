@@ -3,6 +3,7 @@
 use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\modules\admin\models\BooksSearch */
@@ -23,7 +24,7 @@ $this->title = 'Книги';
 
     <p>
         <?php if(Yii::$app->user->identity->access_level >= 50){echo Html::a('Добавить новую книгу', ['create'], ['class' => 'btn btn-success']);} ?>
-        <?= Html::a('Сбросить поиск', ['index'], ['class' => 'btn btn-primary']) ?>
+        <?= Html::a('Сбросить поиск', ['/admin/books'], ['class' => 'btn btn-primary']) ?>
     </p>
 
 <div class="books-index text-center">
@@ -35,7 +36,6 @@ $this->title = 'Книги';
             'filterModel' => $searchModel,
             'columns' => [
                 ['class' => 'yii\grid\SerialColumn'],
-
                 'name',
                 'author',
                 'date',
@@ -48,14 +48,14 @@ $this->title = 'Книги';
                     'value' => function ($data){
                         return $data->category;
                     },
-                    'filter' => Html::activeDropDownList($searchModel, 'category_id', ArrayHelper::map($categories::find()->select('name,id')->orderBy(['name' => SORT_ASC])->asArray()->all(), 'id', 'name'),['class'=>'form-control','prompt' => 'Категории']),
+                    'filter' => Html::activeDropDownList($searchModel, 'category_id', ArrayHelper::map($categories::find()->select('name,id')->orderBy(['name' => SORT_ASC])->asArray()->all(), 'id', 'name'),['class'=>'form-control','prompt' => 'Выберете категорию']),
                 ],
                 [
                     'attribute' => 'subject_id',
                     'value' => function ($data){
                         return $data->subject;
                     },
-                    'filter' => Html::activeDropDownList($searchModel, 'subject_id', ArrayHelper::map($subjects::find()->select('name,id')->orderBy(['name' => SORT_ASC])->asArray()->all(), 'id', 'name'),['class'=>'form-control','prompt' => 'Тематика']),
+                    'filter' => Html::activeDropDownList($searchModel, 'subject_id', ArrayHelper::map($subjects::find()->select('name,id')->orderBy(['name' => SORT_ASC])->asArray()->all(), 'id', 'name'),['class'=>'form-control','prompt' => 'Выберете тематику']),
                 ],
                 Yii::$app->user->identity->access_level < 50 ? (
                 [
@@ -89,17 +89,24 @@ $this->title = 'Книги';
                     },
                     'visible' => false,
                 ]),
-                Yii::$app->user->identity->access_level >= 50 ? (
-                        ['class' => 'yii\grid\ActionColumn']
-                ):([
+
+                Yii::$app->user->identity->access_level == 50 ? ([
+                    'class' => 'yii\grid\ActionColumn',
+                    'template' => '{view}<br>{update}',
+                ]
+                ):(
+                Yii::$app->user->identity->access_level == 100 ? (
+                [
+                    'class' => 'yii\grid\ActionColumn',
+                    'template' => '{view}<br>{update}<br>{delete}'
+                ]):([
                     'attribute' => 'rest',
                     'value' => function ($data){
                         return $data->rest;
                     },
                     'visible' => false,
-                ]),
-
-
+                ])
+                ),
             ],
         ]);
 

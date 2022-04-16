@@ -24,9 +24,9 @@ class BooksCategories extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name'], 'required'],
-            [['name'], 'string', 'max' => 255],
-            [['name'], 'unique'],
+            ['name', 'required'],
+            ['name', 'string', 'max' => 255],
+            ['name', 'unique', 'message' => 'Название категории "{value}" уже занято'],
             ['name', 'trim'],
         ];
     }

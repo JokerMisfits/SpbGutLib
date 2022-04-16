@@ -9,7 +9,6 @@ use app\modules\admin\models\DepartmentsSearch;
 use yii\filters\AccessControl;
 use yii\helpers\Html;
 use yii\helpers\Url;
-use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\web\Response;
@@ -97,8 +96,22 @@ class DepartmentsController extends AppAdminController
             return ActiveForm::validate($model);
         }
         if ($model->load(Yii::$app->request->post())) {
+            $attributes = ['name'];
+            if($this->checkWhiteSpaces($model, (array)$attributes) == false){
+                return $this->render('create', ['model' => $model]);
+            }
+            $transaction = Yii::$app->db->beginTransaction();
             try {
-                $model->save();
+                if($model->save()){
+                    Yii::$app->getSession()->setFlash('success', 'Кафедра успешно сохранена.');
+                    $transaction->commit();
+                    return $this->redirect(['view', 'id' => $model->id]);
+                }
+                else{
+                    Yii::$app->getSession()->setFlash('error', print_r($model->errors,true));
+                    $transaction->rollBack();
+                    return $this->redirect('/admin/departments');
+                }
             }
             catch (\Exception|\Throwable $exception){
                 Yii::$app->getSession()->setFlash('error', $exception->getMessage());
@@ -106,7 +119,6 @@ class DepartmentsController extends AppAdminController
                     'model' => $model,
                 ]);
             }
-            return $this->redirect(['view', 'id' => $model->id]);
         }
 
         return $this->render('create', [
@@ -133,6 +145,10 @@ class DepartmentsController extends AppAdminController
             return ActiveForm::validate($model);
         }
         if ($model->load(Yii::$app->request->post())) {
+            $attributes = ['name'];
+            if($this->checkWhiteSpaces($model, (array)$attributes) == false){
+                return $this->render('update', ['model' => $model]);
+            }
             $oldModel = Department::find()->where(['id' => $model->id])->one();
             if($model->toArray() == $oldModel->toArray()){
                 Yii::$app->getSession()->setFlash('error', 'Измените данные перед отправкой!');
@@ -140,8 +156,18 @@ class DepartmentsController extends AppAdminController
                     'model' => $model,
                 ]);
             }
+            $transaction = Yii::$app->db->beginTransaction();
             try {
-                $model->save();
+                if($model->save()){
+                    Yii::$app->getSession()->setFlash('success', 'Изменения успешно сохранены.');
+                    $transaction->commit();
+                    return $this->redirect(['view', 'id' => $model->id]);
+                }
+                else{
+                    Yii::$app->getSession()->setFlash('error', print_r($model->errors,true));
+                    $transaction->rollBack();
+                    return $this->redirect('/admin/departments');
+                }
             }
             catch (\Exception|\Throwable $exception){
                 Yii::$app->getSession()->setFlash('error', $exception->getMessage());
@@ -149,7 +175,6 @@ class DepartmentsController extends AppAdminController
                     'model' => $model,
                 ]);
             }
-            return $this->redirect(['view', 'id' => $model->id]);
         }
 
         return $this->render('update', [
@@ -173,19 +198,28 @@ class DepartmentsController extends AppAdminController
         $people = People::find()->where(['department_id' => $id])->one();
         if($people == null){
             $model = $this->findModel($id);
+            $transaction = Yii::$app->db->beginTransaction();
             try {
-                $model->delete();
+                if($model->delete()){
+                    Yii::$app->getSession()->setFlash('success', 'Кафедра [' . $model->name . '] успешно удалена.' );
+                    $transaction->commit();
+                    return $this->redirect('/admin/departments');
+                }
+                else{
+                    Yii::$app->getSession()->setFlash('error', print_r($model->errors,true));
+                    $transaction->rollBack();
+                    return $this->redirect('/admin/departments');
+                }
             }
             catch (\Exception|\Throwable $exception){
                 Yii::$app->getSession()->setFlash('error', $exception->getMessage());
-                return $this->redirect(Url::to(['/admin/departments']));
+                return $this->redirect('/admin/departments');
             }
         }
         else{
             Yii::$app->getSession()->setFlash('error', 'Данная кафедра еще используется! '. Html::a(Html::encode('Перейти к данным пользователям'), Url::to(['people/', 'PeopleSearch[department_id]' => $id])));
-            return $this->redirect(Url::to(['/admin/departments']));
+            return $this->redirect('/admin/departments');
         }
-        return $this->redirect(Url::to(['/admin/departments']));
     }
 
     /**
@@ -201,6 +235,6 @@ class DepartmentsController extends AppAdminController
             return $model;
         }
 
-        throw new NotFoundHttpException('The requested page does not exist.');
+        throw new NotFoundHttpException('Запрашиваемая страница не найдена.');
     }
 }

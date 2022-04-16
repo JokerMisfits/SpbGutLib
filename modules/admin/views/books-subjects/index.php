@@ -19,7 +19,7 @@ $this->title = 'Тематики';
     <h1><?= Html::encode($this->title) ?></h1>
     <p>
         <?= Html::a('Добавить новую тематику', ['create'], ['class' => 'btn btn-success']) ?>
-        <?= Html::a('Сбросить поиск', ['index'], ['class' => 'btn btn-primary']) ?>
+        <?= Html::a('Сбросить поиск', ['/admin/books-subjects'], ['class' => 'btn btn-primary']) ?>
     </p>
 <div class="books-subjects-index text-center">
 
@@ -31,7 +31,17 @@ $this->title = 'Тематики';
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
             'name',
-            ['class' => 'yii\grid\ActionColumn'],
+            Yii::$app->user->identity->access_level == 50 ? ([
+                'class' => 'yii\grid\ActionColumn',
+                'template' => '{update}',
+            ]
+            ):(
+            Yii::$app->user->identity->access_level == 100 ? (
+            [
+                'class' => 'yii\grid\ActionColumn',
+                'template' => '{update}<br>{delete}'
+            ]):('')
+            ),
         ],
     ]);
     }

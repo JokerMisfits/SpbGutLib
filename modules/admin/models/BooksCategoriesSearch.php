@@ -16,8 +16,9 @@ class BooksCategoriesSearch extends BooksCategories
     public function rules()
     {
         return [
-            [['id'], 'integer'],
-            [['name'], 'safe'],
+            ['id', 'integer'],
+            ['name', 'string', 'max' => 255],
+            ['name', 'trim'],
         ];
     }
 
@@ -65,7 +66,7 @@ class BooksCategoriesSearch extends BooksCategories
             return $dataProvider;
         }
 
-        // grid filtering conditions
+        // Фильтры поиска (Выпадающие меню + точные значения)
         $query->andFilterWhere([
             'id' => $this->id,
         ]);

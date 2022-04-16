@@ -21,15 +21,36 @@ $this->title = $model->surname . ' ' . $model->name . ' ' . $model->middle_name;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Редактировать данные', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Удалить пользователя', ['delete', 'id' => $model->id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Вы уверены, что хотите удалить данного пользователя?',
-                'method' => 'post',
-            ],
-        ]) ?>
-        <?= Html::a( 'Назад', '../people', ['class' => 'btn btn-warning']); ?>
+        <?php
+            if((isset(Yii::$app->user->identity->access_level) && (Yii::$app->user->identity->access_level >= 50))){
+                if(Yii::$app->user->identity->access_level == 50){
+                    if(Yii::$app->user->identity->id == $model->child_id){
+                        echo Html::a('Редактировать данные', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
+                    }
+                    elseif(Yii::$app->user->identity->access_level > $model->access_level){
+                        echo Html::a('Редактировать данные', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
+                    }
+                }
+                elseif(Yii::$app->user->identity->access_level == 100){
+                    if(Yii::$app->user->identity->id == $model->child_id){
+                        echo Html::a('Редактировать данные', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
+                    }
+                    else{
+                        if(Yii::$app->user->identity->access_level > $model->access_level){
+                            echo Html::a('Редактировать данные', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
+                            echo Html::a('Удалить пользователя', ['delete', 'id' => $model->id], [
+                                'class' => 'btn btn-danger',
+                                'data' => [
+                                    'confirm' => 'Вы уверены, что хотите удалить данного пользователя?',
+                                    'method' => 'post',
+                                ],
+                            ]);
+                        }
+                    }
+                }
+            }
+            echo Html::a( 'Назад', '/admin/people', ['class' => 'btn btn-warning']);
+        ?>
     </p>
 
     <?php

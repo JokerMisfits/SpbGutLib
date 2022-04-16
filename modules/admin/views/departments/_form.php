@@ -26,7 +26,7 @@ use yii\helpers\Url;
         ],
         'class' => 'd-flex justify-content-center',]); ?>
 
-    <?= $form->field($model, 'name',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'name',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textInput(['maxlength' => true, 'placeholder' => 'Введите название кафедры']) ?>
 
     <div class="form-group col-xs-12">
         <?= Html::submitButton('Сохранить', ['class' => 'btn btn-success col-xs-12 col-lg-6 col-lg-offset-3']) ?>

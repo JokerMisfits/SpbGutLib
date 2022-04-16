@@ -24,6 +24,7 @@ AppAsset::register($this);
     <meta charset="<?= Yii::$app->charset ?>">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="mailru-domain" content="l5o9r7pCPWrLwtJC" />
     <?php $this->registerCsrfMetaTags() ?>
     <title><?= Html::encode($this->title) ?></title>
     <?php $this->head() ?>
@@ -44,7 +45,7 @@ AppAsset::register($this);
         'options' => ['class' => 'navbar-nav navbar-right'],
         'items' => [
             ['label' => 'Главная', 'url' => ['/']],
-            Yii::$app->user->identity->access_level < 100 ? (
+            Yii::$app->user->identity->access_level < 50 ? (
             ''
             ) : (
             ['label' => 'Обновления', 'url' => ['/update']]
@@ -59,13 +60,14 @@ AppAsset::register($this);
             ) : (
               ['label' => 'Профиль', 'url' => ['/admin']]
             ),
+            ['label' => 'Обратная связь', 'url' => ['/contact']],
             Yii::$app->user->isGuest ? (
                 ['label' => 'Войти', 'url' => ['/login']]
             ) : (
                 '<li>'
                 . Html::beginForm(['/site/logout'], 'post')
                 . Html::submitButton(
-                    'Logout (' . Yii::$app->user->identity->name . ')',
+                    'Выйти (' . Yii::$app->user->identity->name . ')',
                     ['class' => 'btn btn-link logout']
                 )
                 . Html::endForm()

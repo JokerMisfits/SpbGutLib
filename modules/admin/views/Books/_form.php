@@ -33,24 +33,19 @@ use yii\helpers\Url;
 
     <?
     if((Yii::$app->controller->action->id == 'create' || Yii::$app->controller->action->id == 'update') && (isset(Yii::$app->user->identity->access_level) && (Yii::$app->user->identity->access_level >= 50))) {
-        echo $form->field($model, 'name',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textarea(['rows' => 1]);
-        echo $form->field($model, 'author',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textarea(['rows' => 2]);
-        echo $form->field($model, 'date',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textInput(['maxlength' => true,'placeholder' => 'Введите год первой публикации без пробелов']);
-        echo $form->field($model, 'keywords',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textarea(['rows' => 3]);
-        echo $form->field($model, 'ISBN',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textInput(['maxlength' => true]);
-        echo $form->field($model, 'ISSN',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textInput(['maxlength' => true]);
-        echo $form->field($model, 'publisher',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textInput(['maxlength' => true]);
-        echo $form->field($model, 'publish_date',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textInput(['maxlength' => true,'placeholder' => 'Введите год издания без пробелов']);
+        echo $form->field($model, 'name',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textarea(['rows' => 1, 'placeholder' => 'Введите название']);
+        echo $form->field($model, 'author',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textarea(['rows' => 2, 'placeholder' => 'Введите авторов']);
+        echo $form->field($model, 'date',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textInput(['maxlength' => true,'placeholder' => 'Введите год первой публикации']);
+        echo $form->field($model, 'keywords',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textarea(['rows' => 3, 'placeholder' => 'Введите ключевые слова']);
+        echo $form->field($model, 'ISBN',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textInput(['maxlength' => true, 'placeholder' => 'Введите ISBN']);
+        echo $form->field($model, 'ISSN',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textInput(['maxlength' => true, 'placeholder' => 'Введите ISSN']);
+        echo $form->field($model, 'publisher',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textInput(['maxlength' => true, 'placeholder' => 'Введите название издательства']);
+        echo $form->field($model, 'publish_date',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textInput(['maxlength' => true, 'placeholder' => 'Введите год издания']);
         echo $form->field($model, 'category_id',['enableAjaxValidation' => true, 'enableClientValidation' => false])->dropDownList($categories,['prompt' => 'Выберите категорию']);
         echo $form->field($model, 'subject_id',['enableAjaxValidation' => true, 'enableClientValidation' => false])->dropDownList($subjects,['prompt' => 'Выберите тематику']);
-        echo $form->field($model, 'annotation',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textarea(['rows' => 5]);
-        echo $form->field($model, 'comment',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textarea(['rows' => 2]);
-        if(Yii::$app->controller->action->id == 'create'){
-            echo $form->field($model, 'count',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textInput(['placeholder' => 'Значение должно быть строго положительным!', 'value' => 1]);
-        }
-        elseif(Yii::$app->controller->action->id == 'update'){
-            echo $form->field($model, 'count',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textInput(['placeholder' => 'Изменение этого параметра без учета книг которые еще не вернули, может все сломать!']);
-        }
+        echo $form->field($model, 'annotation',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textarea(['rows' => 5, 'placeholder' => 'Введите аннотацию']);
+        echo $form->field($model, 'comment',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textarea(['rows' => 2, 'placeholder' => 'Введите комментарий']);
+        echo $form->field($model, 'count',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textInput(['placeholder' => 'Введите количество книг', 'value' => 1]);
     }
     ?>
 

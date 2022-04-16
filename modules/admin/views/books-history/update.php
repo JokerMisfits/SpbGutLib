@@ -8,12 +8,6 @@ use yii\helpers\Html;
 /* @var $people */
 ?>
 
-<style>
-    .books-history-update{
-        margin-top: 50px;
-    }
-</style>
-
 <div class="books-history-update">
 
     <h1><?= Html::encode($this->title) ?></h1>

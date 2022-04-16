@@ -24,6 +24,10 @@ namespace app\modules\admin\models;
  */
 class Books extends \yii\db\ActiveRecord
 {
+
+    const SCENARIO_CREATE = 'create';
+    const SCENARIO_UPDATE = 'update';
+
     /**
      * {@inheritdoc}
      */
@@ -53,20 +57,23 @@ class Books extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'date', 'category_id', 'subject_id','count'], 'required'],
+            [['name', 'date', 'category_id', 'subject_id', 'count'], 'required'],
             [['name', 'author', 'keywords', 'annotation', 'comment'], 'string'],
             [['category_id', 'subject_id', 'count', 'rest', 'stock'], 'integer'],
-            ['count', 'integer', 'min' => 0],
+            ['name', 'unique', 'message' => 'Название "{value}" уже занято'],
+            ['count', 'integer', 'min' => 0, 'on' => self::SCENARIO_UPDATE],
+            ['count', 'integer', 'min' => 1, 'on' => self::SCENARIO_CREATE],
             ['count', 'integer', 'max' => 999],
             [['keywords', 'comment'], 'string', 'min' => 4],
             ['annotation', 'string', 'min' => 20],
             [['date', 'publish_date'], 'string', 'min' => 1],
             [['date', 'publish_date'], 'string', 'max' => 4],
             [['ISBN', 'ISSN'], 'string', 'max' => 25],
-            [['name','author','publisher','keywords','comment'], 'string', 'max' => 255],
-            [['date','publish_date'], 'match', 'pattern' => '/^[0-9]{4}$/','message' => '{attribute} должна состоять из 4 чисел'],
-            [['ISBN','ISSN'], 'match', 'pattern' => '/^[0-9-]+$/i','message' => '{attribute} должна состоять только из чисел и дефисов 978-5-9268-2477-0'],
-            [['name', 'date', 'author', 'keywords', 'annotation', 'comment'], 'trim'],
+            [['name', 'author', 'publisher', 'keywords', 'comment'], 'string', 'max' => 255],
+            [['date', 'publish_date'], 'match', 'pattern' => '/^[0-9]{4}$/','message' => '{attribute} должна состоять из 4 чисел'],
+            [['ISBN', 'ISSN'], 'match', 'pattern' => '/^[0-9-]+$/i','message' => '{attribute} должна состоять только из чисел и дефисов 978-5-9268-2477-0'],
+            [['author', 'ISBN', 'ISSN', 'publisher', 'publish_date', 'annotation', 'comment', 'keywords'], 'default', 'value' => null, 'on' => self::SCENARIO_CREATE],
+            ['name', 'trim'],
         ];
     }
 
@@ -79,12 +86,12 @@ class Books extends \yii\db\ActiveRecord
             'id' => 'ID',
             'name' => 'Название',
             'author' => 'Авторы',
-            'date' => 'Дата публикации',
+            'date' => 'Год первой публикации',
             'keywords' => 'Ключевые слова',
             'ISBN' => 'ISBN',
             'ISSN' => 'ISSN',
             'publisher' => 'Издатель',
-            'publish_date' => 'Дата издания',
+            'publish_date' => 'Год издания',
             'category_id' => 'Категория',
             'subject_id' => 'Тематика',
             'annotation' => 'Аннотация',
@@ -93,5 +100,53 @@ class Books extends \yii\db\ActiveRecord
             'rest' => 'Остаток',
             'stock' => 'Есть в наличии',
         ];
+    }
+
+    public function beforeSave($insert){
+        if (parent::beforeSave('beforeInsert')) {
+            if($this->author != null){
+                $this->author = trim($this->author);
+                if($this->author == ''){
+                    $this->author = null;
+                }
+            }
+            if($this->ISBN != null){
+                $this->ISBN = trim($this->ISBN);
+                if($this->ISBN == ''){
+                    $this->ISBN = null;
+                }
+            }
+            if($this->ISSN != null){
+                $this->ISSN = trim($this->ISSN);
+                if($this->ISSN == ''){
+                    $this->ISSN = null;
+                }
+            }
+            if($this->publisher != null){
+                $this->publisher = trim($this->publisher);
+                if($this->publisher == ''){
+                    $this->publisher = null;
+                }
+            }
+            if($this->annotation != null){
+                $this->annotation = trim($this->annotation);
+                if($this->annotation == ''){
+                    $this->annotation = null;
+                }
+            }
+            if($this->comment != null){
+                $this->comment = trim($this->comment);
+                if($this->comment == ''){
+                    $this->comment = null;
+                }
+            }
+            if($this->keywords != null){
+                $this->keywords = trim($this->keywords);
+                if($this->keywords == ''){
+                    $this->keywords = null;
+                }
+            }
+        }
+        return true;
     }
 }

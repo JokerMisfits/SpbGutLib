@@ -23,8 +23,12 @@ $this->title = 'Аккаунты';
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Добавить новый аккаунт', ['create'], ['class' => 'btn btn-success']) ?>
-        <?= Html::a('Сбросить поиск', ['index'], ['class' => 'btn btn-primary']) ?>
+        <?php
+        if(Yii::$app->user->identity->access_level == 100){
+            echo Html::a('Добавить новый аккаунт', ['create'], ['class' => 'btn btn-success']);
+        }
+        echo Html::a('Сбросить поиск', ['/admin/accounts'], ['class' => 'btn btn-primary']);
+        ?>
     </p>
 
 <div class="accounts-index text-center">
@@ -63,8 +67,17 @@ $this->title = 'Аккаунты';
                 },
                 'filter' => Html::activeDropDownList($searchModel, 'access_level', ArrayHelper::map($access::find()->select('access_name,access_level')->asArray()->all(), 'access_level', 'access_name'),['class'=>'form-control','prompt' => 'Выберете уровень доступа']),
             ],
-
-            ['class' => 'yii\grid\ActionColumn'],
+            Yii::$app->user->identity->access_level == 50 ? ([
+                'class' => 'yii\grid\ActionColumn',
+                'template' => '{view}<br>{update}',
+            ]
+            ):(
+            Yii::$app->user->identity->access_level == 100 ? (
+            [
+                'class' => 'yii\grid\ActionColumn',
+                'template' => '{view}<br>{update}<br>{delete}'
+            ]):('')
+            ),
         ],
     ]);
     }

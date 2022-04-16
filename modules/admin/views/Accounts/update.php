@@ -10,12 +10,6 @@ use yii\helpers\Html;
 ?>
 <script src="../../../../web/js/sha512.js"></script>
 
-<style>
-    .accounts-update{
-        margin-top: 50px;
-    }
-</style>
-
 <div class="accounts-update">
 
     <?= $this->render('_form', [

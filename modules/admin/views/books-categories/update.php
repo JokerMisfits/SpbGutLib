@@ -6,12 +6,6 @@ use yii\helpers\Html;
 /* @var $model app\modules\admin\models\BooksCategories */
 ?>
 
-<style>
-    .books-categories-update{
-        margin-top: 50px;
-    }
-</style>
-
 <div class="books-categories-update">
 
     <h1><?= Html::encode($this->title) ?></h1>

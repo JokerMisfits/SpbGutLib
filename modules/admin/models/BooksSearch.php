@@ -68,9 +68,8 @@ class BooksSearch extends Books
             return $dataProvider;
         }
 
-        // grid filtering conditions
+        // Фильтры поиска (Выпадающие меню + точные значения)
         $query->andFilterWhere([
-            'id' => $this->id,
             'category_id' => $this->category_id,
             'subject_id' => $this->subject_id,
             'count' => $this->count,
@@ -82,11 +81,9 @@ class BooksSearch extends Books
             ->andFilterWhere(['like', 'author', $this->author])
             ->andFilterWhere(['like', 'date', $this->date])
             ->andFilterWhere(['like', 'keywords', $this->keywords])
-            ->andFilterWhere(['like', 'annotation', $this->annotation])
             ->andFilterWhere(['like', 'ISBN', $this->ISBN])
             ->andFilterWhere(['like', 'ISSN', $this->ISSN])
-            ->andFilterWhere(['like', 'publisher', $this->publisher])
-            ->andFilterWhere(['like', 'publish_date', $this->publish_date]);
+            ->andFilterWhere(['like', 'publisher', $this->publisher]);
 
         return $dataProvider;
     }

@@ -17,7 +17,10 @@ class PeopleSearch extends People
     {
         return [
             [['id', 'access_level', 'child_id', 'pass_number', 'department_id'], 'integer'],
-            [['name', 'surname', 'middle_name', 'comment', 'books'], 'safe'],
+            [['name', 'surname', 'middle_name'], 'string', 'max' => 20],
+            ['comment','string', 'max' => 255],
+            ['books', 'string'],
+            [['name', 'surname', 'middle_name', 'comment'], 'trim'],
         ];
     }
 
@@ -67,20 +70,17 @@ class PeopleSearch extends People
             return $dataProvider;
         }
 
-        // grid filtering conditions
+        // Фильтры поиска (Выпадающие меню + точные значения)
         $query->andFilterWhere([
             'id' => $this->id,
-            'access_level' => $this->access_level,
-            'child_id' => $this->child_id,
-            'pass_number' => $this->pass_number,
             'department_id' => $this->department_id,
         ]);
 
-        $query->andFilterWhere(['like', 'name', $this->name])
-            ->andFilterWhere(['like', 'surname', $this->surname])
+        $query->andFilterWhere(['like', 'surname', $this->surname])
+            ->andFilterWhere(['like', 'name', $this->name])
             ->andFilterWhere(['like', 'middle_name', $this->middle_name])
-            ->andFilterWhere(['like', 'comment', $this->comment])
-            ->andFilterWhere(['like', 'books', $this->books]);
+            ->andFilterWhere(['like', 'pass_number', $this->pass_number])
+            ->andFilterWhere(['like', 'comment', $this->comment]);
 
         return $dataProvider;
     }

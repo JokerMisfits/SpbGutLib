@@ -24,7 +24,7 @@ $this->title = 'Пользователи';
 
     <p>
         <?= Html::a('Добавить нового пользователя', ['create'], ['class' => 'btn btn-success']) ?>
-        <?= Html::a('Сбросить поиск', ['index'], ['class' => 'btn btn-primary']) ?>
+        <?= Html::a('Сбросить поиск', ['/admin/people'], ['class' => 'btn btn-primary']) ?>
     </p>
 
 <div class="people-index text-center">
@@ -74,8 +74,18 @@ $this->title = 'Пользователи';
                     },
                     'filter' => Html::activeDropDownList($searchModel, 'department_id', ArrayHelper::map($department::find()->select('name,id')->asArray()->all(), 'id', 'name'),['class'=>'form-control','prompt' => 'Выберете кафедру']),
                 ],
+                Yii::$app->user->identity->access_level == 50 ? ([
+                    'class' => 'yii\grid\ActionColumn',
+                    'template' => '{view}<br>{update}',
+                ]
+                ):(
+                Yii::$app->user->identity->access_level == 100 ? (
+                [
+                    'class' => 'yii\grid\ActionColumn',
+                    'template' => '{view}<br>{update}<br>{delete}'
+                ]):('')
+                ),
 
-                ['class' => 'yii\grid\ActionColumn'],
             ],
         ]);
     }

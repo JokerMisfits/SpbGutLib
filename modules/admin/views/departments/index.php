@@ -19,7 +19,7 @@ $this->title = 'Кафедры';
     <h1><?= Html::encode($this->title) ?></h1>
     <p>
         <?= Html::a('Добавить новую кафедру', ['create'], ['class' => 'btn btn-success']) ?>
-        <?= Html::a('Сбросить поиск', ['index'], ['class' => 'btn btn-primary']) ?>
+        <?= Html::a('Сбросить поиск', ['/admin/departments'], ['class' => 'btn btn-primary']) ?>
     </p>
 <div class="department-index text-center">
 
@@ -31,7 +31,10 @@ $this->title = 'Кафедры';
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
             'name',
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'class' => 'yii\grid\ActionColumn',
+                'template' => '{update}<br>{delete}'
+            ],
         ],
     ]);
     }

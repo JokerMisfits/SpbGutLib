@@ -24,7 +24,7 @@ $this->title = 'Заявки';
 
 <p>
     <?= Html::a('Добавить новую запись', ['create'], ['class' => 'btn btn-success']) ?>
-    <?= Html::a('Сбросить поиск', ['index'], ['class' => 'btn btn-primary']) ?>
+    <?= Html::a('Сбросить поиск', ['/admin/books-history'], ['class' => 'btn btn-primary']) ?>
     <?php
         if(Yii::$app->user->identity->access_level >= 100 && $count > 0){
             echo Html::a('Удалить неактивные заявки', ['active'], [
@@ -83,7 +83,17 @@ $this->title = 'Заявки';
                     'format' => 'raw',
                 ],
 
-                ['class' => 'yii\grid\ActionColumn'],
+                Yii::$app->user->identity->access_level == 50 ? ([
+                    'class' => 'yii\grid\ActionColumn',
+                    'template' => '{view}<br>{update}',
+                ]
+                ):(
+                Yii::$app->user->identity->access_level == 100 ? (
+                [
+                    'class' => 'yii\grid\ActionColumn',
+                    'template' => '{view}<br>{update}<br>{delete}'
+                ]):('')
+                ),
             ],
         ]);
     }

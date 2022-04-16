@@ -9,7 +9,6 @@ use Yii;
 use app\modules\admin\models\Books;
 use app\modules\admin\models\BooksSearch;
 use yii\filters\AccessControl;
-use yii\helpers\Url;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\web\Response;
@@ -50,6 +49,12 @@ class BooksController extends AppAdminController
      */
     public function actionIndex()
     {
+
+        if(Yii::$app->user->isGuest == true){
+            $this->AccessDenied();
+            return $this->goHome();
+        }
+
         $searchModel = new BooksSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         $categories = new BooksCategories();
@@ -71,6 +76,11 @@ class BooksController extends AppAdminController
      */
     public function actionView($id)
     {
+        if(Yii::$app->user->isGuest == true){
+            $this->AccessDenied();
+            return $this->goHome();
+        }
+
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
@@ -87,62 +97,63 @@ class BooksController extends AppAdminController
             $this->AccessDenied();
             return $this->goHome();
         }
-
         $model = new Books();
+        $model->scenario = Books::SCENARIO_CREATE;
         if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
             Yii::$app->response->format = Response::FORMAT_JSON;
             return ActiveForm::validate($model);
         }
         if ($model->load(Yii::$app->request->post())) {
+            $attributes = ['name', 'author', 'keywords', 'publisher', 'annotation', 'comment'];
+            if($this->checkWhiteSpaces($model, (array)$attributes) == false){
+                return $this->render('create',['model' => $model,'category' => $this->getCategories(),'subject' => $this->getSubjects()]);
+            }
             if($model->count > 0){
                 $model->rest = $model->count;
-                $date = date("yy");
+                $date = date("Y");
                 if($model->publish_date != null){
                     if($model->date > $model->publish_date){
-                        Yii::$app->getSession()->setFlash('error', 'Год первой публикации должен быть больше либо равен году издания!');
+                        Yii::$app->getSession()->setFlash('error', 'Год издания долженн быть больше либо равен году первой публикации!');
                         $model->date = null;
                         $model->publish_date = null;
-                        return $this->render('create',['model' => $model,'category' => $this->getCategories(),'subject' => $this->getSubjects(),]);
+                        return $this->render('create',['model' => $model,'category' => $this->getCategories(),'subject' => $this->getSubjects()]);
                     }
-                    if(is_numeric($model->date) == true && is_numeric($model->publish_date) == true && strlen($model->date) == 4 && strlen($model->publish_date) == 4 && (integer)$model->date > 0 && (integer)$model->publish_date > 0 && (integer)$model->date <= $date && (integer)$model->publish_date <= $date){
-                        Yii::$app->getSession()->setFlash('success', 'Книга успешно добавлена');
-                    }
-                    else{
-                        Yii::$app->getSession()->setFlash('error', 'Год публикации и издания должен состять из 4 чисел без пробелов и должен быть <= '.$date.' !');
+                    if(!(is_numeric($model->date) == true && is_numeric($model->publish_date) == true && strlen($model->date) == 4 && strlen($model->publish_date) == 4 && (integer)$model->date > 0 && (integer)$model->publish_date > 0 && (integer)$model->date <= $date && (integer)$model->publish_date <= $date)){
+                        Yii::$app->getSession()->setFlash('error', 'Год публикации и издания должен состоять из 4 чисел без пробелов и должен быть <= '.$date.' !');
                         $model->date = null;
                         $model->publish_date = null;
-                        return $this->render('create',['model' => $model,'category' => $this->getCategories(),'subject' => $this->getSubjects(),]);
+                        return $this->render('create',['model' => $model,'category' => $this->getCategories(),'subject' => $this->getSubjects()]);
                     }
                 }
                 else{
-                    if(is_numeric($model->date) == true && strlen($model->date) == 4 && (integer)$model->date > 0 && (integer)$model->date <= $date){
-                        Yii::$app->getSession()->setFlash('success', 'Книга успешно добавлена');
-                    }
-                    else{
+                    if(!(is_numeric($model->date) == true && strlen($model->date) == 4 && (integer)$model->date > 0 && (integer)$model->date <= $date)){
                         Yii::$app->getSession()->setFlash('error', 'Год публикации и издания должен состять из 4 чисел без пробелов и должен быть <= '.$date.' !');
                         $model->date = null;
                         $model->publish_date = null;
-                        return $this->render('create',['model' => $model,'category' => $this->getCategories(),'subject' => $this->getSubjects(),]);
+                        return $this->render('create',['model' => $model,'category' => $this->getCategories(),'subject' => $this->getSubjects()]);
                     }
                 }
             }
             else{
                 Yii::$app->getSession()->setFlash('error', 'Количество книг должно быть больше 0!');
-                return $this->redirect(['create']);
+                return $this->redirect(['/admin/books/create']);
             }
+            $transaction = Yii::$app->db->beginTransaction();
             try {
                 if($model->save()){
+                    Yii::$app->getSession()->setFlash('success', 'Книга успешно сохранена.');
+                    $transaction->commit();
                     return $this->redirect(['view', 'id' => $model->id]);
                 }
                 else{
-                    $error = $model->errors[array_keys($model->errors)[0]];
-                    Yii::$app->getSession()->setFlash('error', $error);
-                    return $this->redirect(['create']);
+                    Yii::$app->getSession()->setFlash('error', print_r($model->errors,true));
+                    $transaction->rollBack();
+                    return $this->redirect(['/admin/books/create']);
                 }
             }
             catch (\Exception|\Throwable $exception){
                 Yii::$app->getSession()->setFlash('error', $exception->getMessage());
-                return $this->redirect(['create']);
+                return $this->redirect(['/admin/books/create']);
             }
 
         }
@@ -168,6 +179,7 @@ class BooksController extends AppAdminController
             return $this->goHome();
         }
         $model = $this->findModel($id);
+        $model->scenario = Books::SCENARIO_UPDATE;
         if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
             Yii::$app->response->format = Response::FORMAT_JSON;
             return ActiveForm::validate($model);
@@ -182,95 +194,29 @@ class BooksController extends AppAdminController
                     'subjects' => $this->getSubjects(),
                 ]);
             }
+            $attributes = ['name', 'author', 'keywords', 'publisher', 'annotation', 'comment'];
+            if($this->checkWhiteSpaces($model, (array)$attributes) == false){
+                return $this->render('update', [
+                    'model' => $model,
+                    'categories' => $this->getCategories(),
+                    'subjects' => $this->getSubjects(),
+                ]);
+            }
             if($model->count >= 0){
-                $date = date("yy");
-                if($model->date > $model->publish_date){
-                    Yii::$app->getSession()->setFlash('error', 'Год первой публикации должен быть больше либо равен году издания!');
-                    return $this->render('update',['model' => $model,'category' => $this->getCategories(),'subject' => $this->getSubjects(),]);
-                }
-                if(is_numeric($model->date) == true && is_numeric($model->publish_date) == true && strlen($model->date) == 4 && strlen($model->publish_date) == 4 && (integer)$model->date > 0 && (integer)$model->publish_date > 0 && (integer)$model->date <= $date && (integer)$model->publish_date <= $date){
-                    $command = Yii::$app->db->createCommand();
-                    $old_count = (new \yii\db\Query())
-                        ->select('count')
-                        ->from('books')
-                        ->where(['id' => $model->id])
-                        ->one();
-                    if($old_count['count'] != $model->count){
-                        if ($model->count == 0){
-                            $difference = -$old_count['count'];
-                        }
-                        else{
-                            if($old_count['count'] == 0){
-                                $difference = $model->count;
-                            }
-                            else{
-                                if($old_count['count'] > $model->count){
-                                    $difference = -($old_count['count'] - $model->count);
-                                }
-                                else{
-                                    $difference = $model->count - $old_count['count'];
-                                }
-
-                            }
-                        }
-                        if($difference != 0){
-                            $model->rest = (integer)$model->rest + (integer)$difference;
-                            $old_stock = (new \yii\db\Query())
-                                ->select('stock')
-                                ->from('books')
-                                ->where(['id' => $model->id])
-                                ->one();
-                            if($old_stock['stock'] == 0){
-                                if((integer)$model->rest > 0){
-                                    try {
-                                        $command->update('books',
-                                            ['stock' => 1], ['id' => $model->id])
-                                            ->execute();
-                                    }
-                                    catch (\Exception|\Throwable $exception){
-                                        Yii::$app->getSession()->setFlash('error', $exception->getMessage());
-                                        return $this->render('update', [
-                                            'model' => $model,
-                                            'categories' => $this->getCategories(),
-                                            'subjects' => $this->getSubjects(),
-                                        ]);
-                                    }
-                                }
-                                else{
-                                    Yii::$app->getSession()->setFlash('error', 'Остаток не может быть меньше 0! Закройте активные заявки на данную книги и попробуйте снова');
-                                    return $this->redirect(['index']);
-                                }
-                            }
-                            else{
-                                if($model->rest < 0){
-                                    Yii::$app->getSession()->setFlash('error', 'Остаток не может быть меньше 0! Закройте активные заявки на данную книги и попробуйте снова');
-                                    return $this->redirect(['index']);
-                                }
-                                elseif($model->rest == 0){
-                                    try {
-                                        $command->update('books',
-                                            ['stock' => 0], ['id' => $model->id])
-                                            ->execute();
-                                    }
-                                    catch (\Exception|\Throwable $exception){
-                                        Yii::$app->getSession()->setFlash('error', $exception->getMessage());
-                                        return $this->render('update', [
-                                            'model' => $model,
-                                            'categories' => $this->getCategories(),
-                                            'subjects' => $this->getSubjects(),
-                                        ]);
-                                    }
-                                }
-                            }
-                        }
+                $date = date("Y");
+                if($model->publish_date != null){
+                    if($model->date > $model->publish_date){
+                        Yii::$app->getSession()->setFlash('error', 'Год первой публикации должен быть больше либо равен году издания!');
+                        return $this->render('update', [
+                            'model' => $model,
+                            'categories' => $this->getCategories(),
+                            'subjects' => $this->getSubjects(),
+                        ]);
                     }
-                    try {
-                        $model->save();
-                        Yii::$app->getSession()->setFlash('success', 'Изменения успешно сохранены');
-                        return $this->redirect(['view', 'id' => $model->id]);
-                    }
-                    catch (\Exception|\Throwable $exception){
-                        Yii::$app->getSession()->setFlash('error', $exception->getMessage());
+                    if(!(is_numeric($model->date) == true && is_numeric($model->publish_date) == true && strlen($model->date) == 4 && strlen($model->publish_date) == 4 && (integer)$model->date > 0 && (integer)$model->publish_date > 0 && (integer)$model->date <= $date && (integer)$model->publish_date <= $date)){
+                        Yii::$app->getSession()->setFlash('error', 'Год публикации и издания должен состять из 4 чисел без пробелов и должен быть меньше либо равен '.$date.' !');
+                        $model->date = null;
+                        $model->publish_date = null;
                         return $this->render('update', [
                             'model' => $model,
                             'categories' => $this->getCategories(),
@@ -278,15 +224,104 @@ class BooksController extends AppAdminController
                         ]);
                     }
                 }
-                else{
-                    Yii::$app->getSession()->setFlash('error', 'Год публикации и издания должен состять из 4 чисел без пробелов и должен быть <= '.$date.' !');
-                    $model->date = null;
-                    $model->publish_date = null;
-                    return $this->render('create',['model' => $model,'category' => $this->getCategories(),'subject' => $this->getSubjects(),]);
+                $command = Yii::$app->db->createCommand();
+                $old_count = (new \yii\db\Query())
+                    ->select('count')
+                    ->from('books')
+                    ->where(['id' => $model->id])
+                    ->one();
+                if($old_count['count'] != $model->count){
+                    if ($model->count == 0){
+                        $difference = -$old_count['count'];
+                    }
+                    else{
+                        if($old_count['count'] == 0){
+                            $difference = $model->count;
+                        }
+                        else{
+                            if($old_count['count'] > $model->count){
+                                $difference = -($old_count['count'] - $model->count);
+                            }
+                            else{
+                                $difference = $model->count - $old_count['count'];
+                            }
+
+                        }
+                    }
+                    if($difference != 0){
+                        $model->rest = (integer)$model->rest + (integer)$difference;
+                        $old_stock = (new \yii\db\Query())
+                            ->select('stock')
+                            ->from('books')
+                            ->where(['id' => $model->id])
+                            ->one();
+                        if($old_stock['stock'] == 0){
+                            if((integer)$model->rest > 0){
+                                try {
+                                    $command->update('books',
+                                        ['stock' => 1], ['id' => $model->id])
+                                        ->execute();
+                                }
+                                catch (\Exception|\Throwable $exception){
+                                    Yii::$app->getSession()->setFlash('error', $exception->getMessage());
+                                    return $this->render('update', [
+                                        'model' => $model,
+                                        'categories' => $this->getCategories(),
+                                        'subjects' => $this->getSubjects(),
+                                    ]);
+                                }
+                            }
+                            else{
+                                Yii::$app->getSession()->setFlash('error', 'Остаток не может быть меньше 0! Закройте активные заявки на данную книги и попробуйте снова.');
+                                return $this->redirect(['/admin/books/index']);
+                            }
+                        }
+                        else{
+                            if($model->rest < 0){
+                                Yii::$app->getSession()->setFlash('error', 'Остаток не может быть меньше 0! Закройте активные заявки на данную книги и попробуйте снова.');
+                                return $this->redirect(['/admin/books/index']);
+                            }
+                            elseif($model->rest == 0){
+                                try {
+                                    $command->update('books',
+                                        ['stock' => 0], ['id' => $model->id])
+                                        ->execute();
+                                }
+                                catch (\Exception|\Throwable $exception){
+                                    Yii::$app->getSession()->setFlash('error', $exception->getMessage());
+                                    return $this->render('update', [
+                                        'model' => $model,
+                                        'categories' => $this->getCategories(),
+                                        'subjects' => $this->getSubjects(),
+                                    ]);
+                                }
+                            }
+                        }
+                    }
+                }
+                $transaction = Yii::$app->db->beginTransaction();
+                try {
+                    if($model->save()){
+                        Yii::$app->getSession()->setFlash('success', 'Изменения успешно сохранены.');
+                        $transaction->commit();
+                        return $this->redirect(['view', 'id' => $model->id]);
+                    }
+                    else{
+                        Yii::$app->getSession()->setFlash('error', print_r($model->errors,true));
+                        $transaction->rollBack();
+                        return $this->redirect('/admin/books');
+                    }
+                }
+                catch (\Exception|\Throwable $exception){
+                    Yii::$app->getSession()->setFlash('error', $exception->getMessage());
+                    return $this->render('update', [
+                        'model' => $model,
+                        'categories' => $this->getCategories(),
+                        'subjects' => $this->getSubjects(),
+                    ]);
                 }
             }
             else{
-
                 Yii::$app->getSession()->setFlash('error', 'Количество книг должно быть больше 0!');
             }
         }
@@ -316,25 +351,32 @@ class BooksController extends AppAdminController
                 $model  = $this->findModel($id);
                 if($model->count == $model->rest){
                     if($this->findTasks($model->id) == true){
-                        $model->delete();
+                        $transaction = Yii::$app->db->beginTransaction();
+                        if($model->delete()){
+                            Yii::$app->getSession()->setFlash('success', 'Книга [' . $model->name . '] успешно удалена.');
+                            $transaction->commit();
+                            return $this->redirect('/admin/books');
+                        }
+                        else{
+                            Yii::$app->getSession()->setFlash('error', print_r($model->errors,true));
+                            $transaction->rollBack();
+                            return $this->redirect('/admin/books');
+                        }
                     }
                     else{
-                        Yii::$app->getSession()->setFlash('error', 'Не удалось удалить неактивные запросы на данную книгу!');
-                        return $this->redirect(Url::to(['/admin/books']));
+                        return $this->redirect('/admin/books');
                     }
                 }
                 else{
-                    Yii::$app->getSession()->setFlash('error', 'Закройте активные заявки на данную книги и попробуйте снова');
-                    return $this->redirect(Url::to(['/admin/books']));
+                    Yii::$app->getSession()->setFlash('error', 'Закройте активные заявки на данную книги и попробуйте снова.');
+                    return $this->redirect('/admin/books');
                 }
             }
             catch (\Exception|\Throwable $exception){
                 Yii::$app->getSession()->setFlash('error', $exception->getMessage());
-                return $this->redirect(Url::to(['/admin/books']));
+                return $this->redirect('/admin/books');
             }
         }
-        Yii::$app->getSession()->setFlash('success', 'Книга успешно удалена');
-        return $this->redirect(Url::to(['/admin/books']));
     }
 
     private function getCategories(){
@@ -357,6 +399,7 @@ class BooksController extends AppAdminController
         }
         return $subject;
     }
+
     private function findTasks($id){
         $model = BooksHistory::find()
             ->where(['book_id' => $id,'active' => 1])
@@ -364,7 +407,7 @@ class BooksController extends AppAdminController
             ->one();
         if($model != null){
             Yii::$app->getSession()->setFlash('error', 'Невозможно удалить данную книгу, закройте заявки и попробуйте снова!');
-            return $this->redirect(Url::to(['/admin/books']));
+            return false;
         }
         $model = BooksHistory::find()
             ->where(['book_id' => $id])
@@ -386,7 +429,7 @@ class BooksController extends AppAdminController
             catch (\Exception|\Throwable $exception){
                 $transaction->rollBack();
                 Yii::$app->getSession()->setFlash('error', $exception->getMessage());
-                return $this->redirect(Url::to(['/admin/accounts']));
+                return false;
             }
         }
         try {
@@ -395,10 +438,11 @@ class BooksController extends AppAdminController
         catch (\Exception|\Throwable $exception){
             $transaction->rollBack();
             Yii::$app->getSession()->setFlash('error', $exception->getMessage());
-            return $this->redirect(Url::to(['/admin/accounts']));
+            return false;
         }
         return true;
     }
+
     /**
      * Finds the Books model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
@@ -412,6 +456,6 @@ class BooksController extends AppAdminController
             return $model;
         }
 
-        throw new NotFoundHttpException('The requested page does not exist.');
+        throw new NotFoundHttpException('Запрашиваемая страница не найдена.');
     }
 }

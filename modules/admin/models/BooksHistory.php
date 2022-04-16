@@ -45,6 +45,7 @@ class BooksHistory extends \yii\db\ActiveRecord
             ['comment', 'string', 'min' => 4],
             ['comment', 'string', 'max' => 255],
             [['date_from', 'date_end'], 'string', 'max' => 30],
+            ['count', 'match', 'pattern' => '/^[0-9]$/', 'message' => '{attribute} должен состоять только из чисел.'],
             ['comment', 'trim'],
         ];
     }
@@ -65,4 +66,17 @@ class BooksHistory extends \yii\db\ActiveRecord
             'count' => 'Количество',
         ];
     }
+
+    public function beforeSave($insert){
+        if (parent::beforeSave('beforeInsert')) {
+            if($this->comment != null){
+                $this->comment = trim($this->comment);
+                if($this->comment == ''){
+                    $this->comment = null;
+                }
+            }
+        }
+        return true;
+    }
+
 }

@@ -14,7 +14,6 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\web\Response;
 use yii\widgets\ActiveForm;
-use yii\helpers\Url;
 
 /**
  * AccountsController implements the CRUD actions for Accounts model.
@@ -49,24 +48,23 @@ class AccountsController extends AppAdminController
      * Lists all Accounts models.
      * @return mixed
      */
-    public function actionIndex()
+    public function actionIndex()// Доступ модератор и выше
     {
-        $searchModel = new AccountsSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        $access = new AccessLevel();
-        $department= new Department();
         if (Yii::$app->user->identity->access_level < 50) {
             $this->AccessDenied();
             return $this->goHome();
         }
-        else{
-            return $this->render('index', [
-                'searchModel' => $searchModel,
-                'dataProvider' => $dataProvider,
-                'access' => $access,
-                'department' => $department,
-            ]);
-        }
+        $searchModel = new AccountsSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $access = new AccessLevel();
+        $department= new Department();
+
+        return $this->render('index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+            'access' => $access,
+            'department' => $department,
+        ]);
     }
 
     /**
@@ -75,7 +73,7 @@ class AccountsController extends AppAdminController
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionView($id)
+    public function actionView($id)// Доступ модератор и выше
     {
         if (Yii::$app->user->identity->access_level < 50) {
             $this->AccessDenied();
@@ -93,34 +91,49 @@ class AccountsController extends AppAdminController
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreate()
+    public function actionCreate()// Доступ администратор и выше
     {
         if (Yii::$app->user->identity->access_level < 100) {
             $this->AccessDenied();
             return $this->goHome();
         }
-
         $model = new Accounts();
+        $model->scenario = Accounts::SCENARIO_FORM;
         if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
             Yii::$app->response->format = Response::FORMAT_JSON;
+            if($model->password[0] == ' '){
+                $model->password = null;
+            }
             return ActiveForm::validate($model);
         }
         if ($model->load(Yii::$app->request->post())) {
-            if(strlen($model->password) < 128 || strlen($model->password) > 128){
-                Yii::$app->getSession()->setFlash('error', 'Allow javascript on this page!');
-                return $this->redirect('create');
+            $attributes = ['surname', 'name', 'middle_name'];
+            if($this->checkWhiteSpaces($model, (array)$attributes) == false){
+                $model->password = null;
+                $model->password_confirm = null;
+                return $this->render('create', ['model' => $model, 'depart' => $this->getDepart(), 'level' => $this->getAccess()]);
+            }
+            if(strlen($model->password) < 128 || strlen($model->password) > 128 || strlen($model->password_confirm) < 128 || strlen($model->password_confirm) > 128){
+                Yii::$app->getSession()->setFlash('error', 'Разрешите использование JavaScript на данной странице!');
+                return $this->redirect('/admin/accounts/create');
             }
             if(strlen($model->pass_number) < 4 || strlen($model->pass_number) > 25){
                 Yii::$app->getSession()->setFlash('error', 'Номер пропуска не должен быть меньше 4 символов и не должен привышать 25 символов!');
-                return $this->redirect('create');
+                return $this->redirect('/admin/accounts/create');
             }
             $findDuplicate = Accounts::find()->where(['pass_number' => $model->pass_number])->one();
             if($findDuplicate != null){
                 Yii::$app->getSession()->setFlash('error', 'Данный номер пропуска уже используется!');
-                return $this->redirect('create');
+                return $this->redirect('/admin/accounts/create');
             }
+            $model->scenario = Accounts::SCENARIO_SAVE;
             $model->password = Yii::$app->getSecurity()->generatePasswordHash($model->password);
             $model->parent_id = $this->findPeople($model);
+            $model->registration_timestamp = (string)time();
+            $model->last_activity_timestamp = null;
+            $model->surname = ucfirst($model->surname);
+            $model->name = ucfirst($model->name);
+            $model->middle_name = ucfirst($model->middle_name);
             $db = Yii::$app->db;
                 if ($model->parent_id == null) {
                     $transaction = $db->beginTransaction();
@@ -145,16 +158,15 @@ class AccountsController extends AppAdminController
                             $db->transaction->commit();
                         }
                         else{
-                            Yii::$app->getSession()->setFlash('error', 'Не удалось создать аккаунт');
+                            Yii::$app->getSession()->setFlash('error', print_r($model->errors,true));
                             $transaction->rollBack();
-                            return $this->redirect('create');
+                            return $this->redirect('/admin/accounts/create');
                         }
-
                     }
                     catch (\Exception|\Throwable $exception) {
                         Yii::$app->getSession()->setFlash('error', $exception->getMessage());
                         $transaction->rollBack();
-                        return $this->redirect('create');
+                        return $this->redirect('/admin/accounts/create');
                     }
                 }
                 else{
@@ -165,18 +177,24 @@ class AccountsController extends AppAdminController
                         ->one();
                     $command = Yii::$app->db->createCommand();
                     try {
-                        $model->save();
-                        $this->checkForUpdate($model,$command,$child_model);
-                        $transaction->commit();
+                        if($model->save()){
+                            $this->checkForUpdate($model,$command,$child_model);
+                            $transaction->commit();
+                        }
+                        else{
+                            Yii::$app->getSession()->setFlash('error', print_r($model->errors,true));
+                            $transaction->rollBack();
+                            return $this->redirect('/admin/accounts/create');
+                        }
 
                     }
                     catch (\Exception|\Throwable $exception){
                         Yii::$app->getSession()->setFlash('error', $exception->getMessage());
                         $transaction->rollBack();
-                        return $this->redirect('create');
+                        return $this->redirect('/admin/accounts/create');
                     }
                 }
-                return $this->redirect(['view', 'id' => $model->id]);
+                return $this->redirect(['/admin/accounts/view', 'id' => $model->id]);
             }
         return $this->render('create',[
             'model' => $model,
@@ -192,14 +210,28 @@ class AccountsController extends AppAdminController
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionUpdate($id)
+    public function actionUpdate($id)// Доступ модератор и выше
     {
         /* @var People $child_model */
         $model = $this->findModel($id);
-        if (Yii::$app->user->identity->access_level < 100) {
-            if(Yii::$app->user->identity->id != $model->id && Yii::$app->user->identity->access_level < 50){
-                $this->AccessDenied();
-                return $this->goHome();
+        if(Yii::$app->user->identity->access_level < 50){
+            $this->AccessDenied();
+            return $this->goHome();
+        }
+        if(Yii::$app->user->identity->access_level == 50){
+            if(Yii::$app->user->identity->access_level == $model->access_level && Yii::$app->user->identity->id != $model->id){
+                Yii::$app->getSession()->setFlash('error', 'Запрещено редактировать профили других модераторов!');
+                return $this->redirect('/admin/accounts');
+            }
+            elseif(Yii::$app->user->identity->access_level < $model->access_level){
+                Yii::$app->getSession()->setFlash('error', 'Запрещено редактировать профили администраторов!');
+                return $this->redirect('/admin/accounts');
+            }
+        }
+        if(Yii::$app->user->identity->access_level == 100){
+            if(Yii::$app->user->identity->access_level == $model->access_level && Yii::$app->user->identity->id != $model->id){
+                Yii::$app->getSession()->setFlash('error', 'Запрещено редактировать профили других администраторов!');
+                return $this->redirect('/admin/accounts');
             }
         }
         if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
@@ -207,6 +239,13 @@ class AccountsController extends AppAdminController
             return ActiveForm::validate($model);
         }
         if($model->load(Yii::$app->request->post())) {
+            $attributes = ['surname', 'name', 'middle_name'];
+            if($this->checkWhiteSpaces($model, (array)$attributes) == false){
+                return $this->render('update', ['model' => $model, 'depart' => $this->getDepart(), 'level' => $this->getAccess()]);
+            }
+            $model->surname = ucfirst($model->surname);
+            $model->name = ucfirst($model->name);
+            $model->middle_name = ucfirst($model->middle_name);
             $db = Yii::$app->db;
             $oldModel = Accounts::find()->where(['id' => $model->id])->one();
             if($model->toArray() == $oldModel->toArray()){
@@ -217,23 +256,30 @@ class AccountsController extends AppAdminController
                     'level' => $this->getAccess(),
                 ]);
             }
+            $model->scenario = Accounts::SCENARIO_SAVE;
             $transaction = $db->beginTransaction();
             try {
-                $model->save();
-                $child_model = People::find()
-                    ->where(['pass_number' => $model->pass_number])
-                    ->one();
-                if($child_model != null){
-                    $this->checkForUpdate($model,$db->createCommand(),$child_model);
+                if($model->save()){
+                    $child_model = People::find()
+                        ->where(['pass_number' => $model->pass_number])
+                        ->one();
+                    if($child_model != null){
+                        $this->checkForUpdate($model,$db->createCommand(),$child_model);
+                    }
+                    Yii::$app->getSession()->setFlash('success', 'Изменения успешно сохранены.');
+                    $transaction->commit();
+                    return $this->redirect(['/admin/accounts/view', 'id' => $model->id]);
                 }
-                Yii::$app->getSession()->setFlash('success', 'Изменения успешно сохранены');
-                $transaction->commit();
-                return $this->redirect(['view', 'id' => $model->id]);
+                else{
+                    Yii::$app->getSession()->setFlash('error', print_r($model->errors,true));
+                    $transaction->rollBack();
+                    return $this->redirect('/admin/accounts');
+                }
             }
             catch (\Exception|\Throwable $exception){
                 $transaction->rollBack();
                 Yii::$app->getSession()->setFlash('error', $exception->getMessage());
-                return $this->redirect(['view', 'id' => $model->id]);
+                return $this->redirect(['/admin/accounts/view', 'id' => $model->id]);
             }
         }
 
@@ -324,7 +370,8 @@ class AccountsController extends AppAdminController
                 }
                 catch (\Exception|\Throwable $exception){
                     $transaction->rollBack();
-                    return Yii::$app->getSession()->setFlash('error', $exception->getMessage());
+                    Yii::$app->getSession()->setFlash('error', $exception->getMessage());
+                    return $this->redirect('/admin/accounts');
                 }
             }
             else{
@@ -345,7 +392,7 @@ class AccountsController extends AppAdminController
             ->one();
         if($model != null){
             Yii::$app->getSession()->setFlash('error', 'Невозможно удалить данный аккаунт, закройте заявки на книги у данного пользователя и попробуйте снова!');
-            return $this->redirect(Url::to(['/admin/accounts']));
+            return false;
         }
         $model = BooksHistory::find()
             ->where(['user_id' => $id])
@@ -367,7 +414,7 @@ class AccountsController extends AppAdminController
             catch (\Exception|\Throwable $exception){
                 $transaction->rollBack();
                 Yii::$app->getSession()->setFlash('error', $exception->getMessage());
-                return $this->redirect(Url::to(['/admin/accounts']));
+                return false;
             }
         }
         try {
@@ -376,7 +423,7 @@ class AccountsController extends AppAdminController
         catch (\Exception|\Throwable $exception){
             $transaction->rollBack();
             Yii::$app->getSession()->setFlash('error', $exception->getMessage());
-            return $this->redirect(Url::to(['/admin/accounts']));
+            return false;
         }
         return true;
     }
@@ -388,50 +435,49 @@ class AccountsController extends AppAdminController
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionDelete($id)
+    public function actionDelete($id)// Доступ администратор и выше
     {
         if (Yii::$app->user->identity->access_level < 100) {
             $this->AccessDenied();
             return $this->goHome();
         }
         $model = $this->findModel($id);
-        if($model->access_level >= Yii::$app->user->identity->access_level && Yii::$app->user->identity->id != $model->id){
-            $this->AccessDenied();
-            return $this->goHome();
-        }
-        if(Yii::$app->user->identity->id == $model->id){
-            try{
-                $model->delete();
-            }
-            catch (\Exception|\Throwable $exception){
-                Yii::$app->getSession()->setFlash('error', $exception->getMessage());
-                return $this->redirect(Url::to(['/admin/accounts']));
-            }
+        if($model->id == Yii::$app->user->identity->id){
+            Yii::$app->getSession()->setFlash('error', 'Невозможно удалить свой аккаунт!');
+            return $this->redirect('/admin/accounts');
         }
         elseif(Yii::$app->user->identity->access_level > $model->access_level){
             if($this->findTasks($model->parent_id) == true){
                 if($this->findPeople($model,false) == false){
                     Yii::$app->getSession()->setFlash('error', 'Невозможно удалить данный аккаунт, закройте заявки на книги у данного пользователя и попробуйте снова!');
-                    return $this->redirect(Url::to(['/admin/accounts']));
+                    return $this->redirect('/admin/accounts');
                 }
+                $transaction = Yii::$app->db->beginTransaction();
                 try{
-                    $model->delete();
+                    if($model->delete()){
+                        $transaction->commit();
+                        Yii::$app->getSession()->setFlash('success', 'Аккаунт и пользователь [' . $model->surname . ' ' . $model->name . ' ' . $model->middle_name . '] успешно удален.');
+                        return $this->redirect('/admin/accounts');
+                    }
+                    else{
+                        Yii::$app->getSession()->setFlash('error', print_r($model->errors,true));
+                        $transaction->rollBack();
+                        return $this->redirect('/admin/accounts');
+                    }
                 }
                 catch (\Exception|\Throwable $exception){
                     Yii::$app->getSession()->setFlash('error', $exception->getMessage());
-                    return $this->redirect(Url::to(['/admin/accounts']));
+                    return $this->redirect('/admin/accounts');
                 }
             }
             else{
-                return $this->redirect(Url::to(['/admin/accounts']));
+                return $this->redirect('/admin/accounts');
             }
         }
         else{
-            Yii::$app->getSession()->setFlash('error', 'Невозможно удалить данный аккаунт, ваш уровень доступа должен быть выше чем у аккаунта, который вы пытаетесь удалить!');
-            return $this->redirect(Url::to(['/admin/accounts']));
+            Yii::$app->getSession()->setFlash('error', 'Невозможно удалить данный аккаунт, ваш уровень доступа должен быть выше чем у аккаунта, который вы пытаетесь удалить, дальнейшие попытки приведут к блокировке!');
+            return $this->redirect('/admin/accounts');
         }
-        Yii::$app->getSession()->setFlash('success', 'Пользователь [' . $model->surname . ' ' . $model->name . ' ' . $model->middle_name . '] успешно удален');
-        return $this->redirect(Url::to(['/admin/accounts']));
     }
 
     /**
@@ -447,6 +493,6 @@ class AccountsController extends AppAdminController
             return $model;
         }
 
-        throw new NotFoundHttpException('The requested page does not exist.');
+        throw new NotFoundHttpException('Запрашиваемая страница не найдена.');
     }
 }

@@ -23,15 +23,24 @@ $this->title = $book;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Редактировать данные', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Удалить запись', ['delete', 'id' => $model->id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Вы уверены, что хотите удалить данную запись?',
-                'method' => 'post',
-            ],
-        ]) ?>
-        <?= Html::a( 'Назад', '../books-history', ['class' => 'btn btn-warning']); ?>
+        <?php
+
+        if(Yii::$app->user->identity->access_level == 50){
+            echo Html::a('Редактировать данные', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
+        }
+        elseif(Yii::$app->user->identity->access_level == 100){
+            echo Html::a('Редактировать данные', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
+            echo Html::a('Удалить запись', ['delete', 'id' => $model->id], [
+                'class' => 'btn btn-danger',
+                'data' => [
+                    'confirm' => 'Вы уверены, что хотите удалить данную запись?',
+                    'method' => 'post',
+                ],
+            ]);
+        }
+
+        ?>
+        <?= Html::a( 'Назад', '/admin/books-history', ['class' => 'btn btn-warning']); ?>
     </p>
 
     <?php try {

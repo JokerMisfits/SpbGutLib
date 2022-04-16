@@ -2,8 +2,6 @@
 
 namespace app\modules\admin\models;
 
-use Yii;
-
 /**
  * This is the model class for table "access_level".
  *
@@ -27,8 +25,8 @@ class AccessLevel extends \yii\db\ActiveRecord
     {
         return [
             [['access_level', 'access_name'], 'required'],
-            [['access_level'], 'integer'],
-            [['access_name'], 'string', 'max' => 255],
+            ['access_level', 'integer'],
+            ['access_name', 'string', 'max' => 255],
         ];
     }
 
@@ -38,8 +36,8 @@ class AccessLevel extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'access_level' => 'Access Level',
-            'access_name' => 'Access Name',
+            'access_level' => 'Уровень доступа',
+            'access_name' => 'Название',
         ];
     }
 }

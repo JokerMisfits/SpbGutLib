@@ -8,7 +8,6 @@ use Yii;
 use app\modules\admin\models\BooksHistory;
 use app\modules\admin\models\BooksHistorySearch;
 use yii\filters\AccessControl;
-use yii\helpers\Url;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\web\Response;
@@ -103,6 +102,10 @@ class BooksHistoryController extends AppAdminController
             return ActiveForm::validate($model);
         }
         if ($model->load(Yii::$app->request->post())) {
+            $attributes = ['comment', 'count'];
+            if($this->checkWhiteSpaces($model, (array)$attributes) == false){
+                return $this->render('create', ['model' => $model, 'books' => $this->getBooks(), 'people' => $this->getPeople()]);
+            }
             $db = Yii::$app->db;
             $user = $model->user_id;
             $book_id = $model->book_id;
@@ -138,25 +141,32 @@ class BooksHistoryController extends AppAdminController
                 $books[count($books)+1] = (integer)$model->book_id.'{'.(integer)$model->count.'}';
                 $books = implode(',',$books);
             }
-            date_default_timezone_set('Europe/Moscow');
             $model->date_from = date('d.m.Y H:i:s');
             $oldStock = $db->createCommand("SELECT stock FROM books WHERE id = $book_id")->queryOne();
             $transaction = $db->beginTransaction();
             try {
-                $model->save();
-                $db->createCommand()->update('people',
-                    ['books' => $books], ['id' => $model->user_id])->execute();
-                $db->createCommand()->update('books',
-                    ['rest' => $newRest], ['id' => $model->book_id])->execute();
-                if($newRest == 0){
+                if($model->save()){
+                    $db->createCommand()->update('people',
+                        ['books' => $books], ['id' => $model->user_id])->execute();
                     $db->createCommand()->update('books',
-                        ['stock' => 0], ['id' => $model->book_id])->execute();
-                }
-                elseif($oldStock['stock'] == 0){
+                        ['rest' => $newRest], ['id' => $model->book_id])->execute();
+                    if($newRest == 0){
+                        $db->createCommand()->update('books',
+                            ['stock' => 0], ['id' => $model->book_id])->execute();
+                    }
+                    elseif($oldStock['stock'] == 0){
                         $db->createCommand()->update('books',
                             ['stock' => 1], ['id' => $model->book_id])->execute();
+                    }
+                    Yii::$app->getSession()->setFlash('success', 'Заявка успешно сохранена.');
+                    $transaction->commit();
+                    return $this->redirect(['view', 'id' => $model->id]);
                 }
-                $transaction->commit();
+                else{
+                    Yii::$app->getSession()->setFlash('error', print_r($model->errors,true));
+                    $transaction->rollBack();
+                    return $this->redirect('/admin/books-history');
+                }
             }
             catch (\Exception|\Throwable $exception){
                 Yii::$app->getSession()->setFlash('error', $exception->getMessage());
@@ -167,8 +177,6 @@ class BooksHistoryController extends AppAdminController
                     'people' => $this->getPeople(),
                 ]);
             }
-
-            return $this->redirect(['view', 'id' => $model->id]);
         }
 
 
@@ -198,6 +206,10 @@ class BooksHistoryController extends AppAdminController
             return ActiveForm::validate($model);
         }
         if ($model->load(Yii::$app->request->post())) {
+            $attributes = ['comment', 'count'];
+            if($this->checkWhiteSpaces($model, (array)$attributes) == false){
+                return $this->render('update', ['model' => $model, 'books' => $this->getBooks(), 'people' => $this->getPeople()]);
+            }
             $oldModel = BooksHistory::find()->where(['id' => $model->id])->one();
             if($model->toArray() == $oldModel->toArray()){
                 Yii::$app->getSession()->setFlash('error', 'Измените данные перед отправкой!');
@@ -207,18 +219,27 @@ class BooksHistoryController extends AppAdminController
                     'people' => $this->getPeople(),
                 ]);
             }
+            $transaction = Yii::$app->db->beginTransaction();
             try {
-                $model->save();
+                if($model->save()){
+                    Yii::$app->getSession()->setFlash('success', 'Изменения успешно сохранены.');
+                    $transaction->commit();
+                    return $this->redirect(['view', 'id' => $model->id]);
+                }
+                else{
+                    Yii::$app->getSession()->setFlash('error', print_r($model->errors,true));
+                    $transaction->rollBack();
+                    return $this->redirect('/admin/books-history');
+                }
             }
             catch (\Exception|\Throwable $exception){
-                Yii::$app->session->setFlash('error',$exception->getMessage());
+                Yii::$app->getSession()->setFlash('error',$exception->getMessage());
                 return $this->render('update', [
                     'model' => $model,
                     'books' => $this->getBooks(),
                     'people' => $this->getPeople(),
                 ]);
             }
-            return $this->redirect(['view', 'id' => $model->id]);
         }
 
         return $this->render('update', [
@@ -243,19 +264,28 @@ class BooksHistoryController extends AppAdminController
         }
         $model = $this->findModel($id);
         if($model->active == 1){
-            Yii::$app->session->setFlash('error','Нельзя удалять активную запись!');
-            return $this->redirect(Url::to(['/admin/books-history']));
+            Yii::$app->getSession()->setFlash('error','Нельзя удалять активную запись!');
+            return $this->redirect('/admin/books-history');
         }
         else{
+            $transaction = Yii::$app->db->beginTransaction();
             try {
-                $model->delete();
+                if($model->delete()){
+                    Yii::$app->getSession()->setFlash('success', 'Заявка успешно удалена.' );
+                    $transaction->commit();
+                    return $this->redirect('/admin/books-history');
+                }
+                else{
+                    Yii::$app->getSession()->setFlash('error', print_r($model->errors,true));
+                    $transaction->rollBack();
+                    return $this->redirect('/admin/books-history');
+                }
             }
             catch (\Exception|\Throwable $exception){
-                Yii::$app->session->setFlash('error',$exception->getMessage());
-                return $this->redirect(Url::to(['/admin/books-history']));
+                Yii::$app->getSession()->setFlash('error',$exception->getMessage());
+                return $this->redirect('/admin/books-history');
             }
         }
-        return $this->redirect(Url::to(['/admin/books-history']));
     }
     /**
      * Deletes an existing BooksHistory model.
@@ -272,7 +302,6 @@ class BooksHistoryController extends AppAdminController
         $db = Yii::$app->db;
         $model = $this->findModel($id);
         $user_id = $model->user_id;
-        Yii::$app->session->setFlash('success','Заявка успешно закрыта');
         $book_id = $model->book_id;
         $rest = $db->createCommand("SELECT rest FROM books WHERE id= $book_id")->queryOne();
         $stock = $db->createCommand("SELECT stock FROM books WHERE id= $book_id")->queryOne();
@@ -291,7 +320,6 @@ class BooksHistoryController extends AppAdminController
             $books = null;
         }
         $model->active = 0;
-        date_default_timezone_set('Europe/Moscow');
         $model->date_end = date('d.m.Y H:i:s');
         $transaction = $db->beginTransaction();
         try {
@@ -303,14 +331,22 @@ class BooksHistoryController extends AppAdminController
             }
             $db->createCommand()->update('people',
                 ['books' => $books], ['id' => $user_id])->execute();
-            $model->save();
-            $transaction->commit();
+            if($model->save()){
+                Yii::$app->getSession()->setFlash('success','Заявка успешно закрыта.');
+                $transaction->commit();
+                return $this->redirect(['/admin/books-history']);
+            }
+            else{
+                Yii::$app->getSession()->setFlash('error', print_r($model->errors,true));
+                $transaction->rollBack();
+                return $this->redirect('/admin/books-history');
+            }
         }
         catch (\Exception|\Throwable $exception){
-            Yii::$app->session->setFlash('error',$exception->getMessage());
+            Yii::$app->getSession()->setFlash('error',$exception->getMessage());
             $transaction->rollBack();
         }
-        return $this->redirect(['index']);
+        return $this->redirect(['/admin/books-history']);
     }
 
     public function actionActive(){
@@ -318,7 +354,7 @@ class BooksHistoryController extends AppAdminController
             $this->AccessDenied();
             return $this->goHome();
         }
-        elseif(Yii::$app->request->post()){
+        if(Yii::$app->request->post()){
             try {
                 $count = BooksHistory::find()
                     ->where('active = 0')
@@ -329,16 +365,16 @@ class BooksHistoryController extends AppAdminController
                     throw new \Exception('Отсутствуют неактивные записи!');
                 }
                 BooksHistory::deleteAll(['active' => '0']);
-                Yii::$app->session->setFlash('success',"Успешно удалено $count записей");
+                Yii::$app->getSession()->setFlash('success',"Успешно удалено $count записей.");
             }
             catch (\Exception|\Throwable $exception){
-                Yii::$app->session->setFlash('error',$exception->getMessage());
+                Yii::$app->getSession()->setFlash('error',$exception->getMessage());
             }
-            return $this->redirect(['index']);
+            return $this->redirect(['/admin/books-history']);
         }
         else{
-            Yii::$app->session->setFlash('error',"Allow only request method POST");
-            return $this->redirect(['index']);
+            Yii::$app->getSession()->setFlash('error',"Allow only request method POST");
+            return $this->redirect(['/admin/books-history']);
         }
 
     }
@@ -382,6 +418,6 @@ class BooksHistoryController extends AppAdminController
             return $model;
         }
 
-        throw new NotFoundHttpException('The requested page does not exist.');
+        throw new NotFoundHttpException('Запрашиваемая страница не найдена.');
     }
 }

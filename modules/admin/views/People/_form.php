@@ -31,10 +31,10 @@ use yii\helpers\Url;
     <!--  FORM FOR CREATE  -->
     <?php
     if(Yii::$app->controller->action->id == 'create' && (isset(Yii::$app->user->identity->access_level) && (Yii::$app->user->identity->access_level >= 50))) {
-     echo $form->field($model, 'name',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textInput(['maxlength' => true]);
-     echo $form->field($model, 'surname',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textInput(['maxlength' => true]);
-     echo $form->field($model, 'middle_name',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textInput(['maxlength' => true]);
-     echo $form->field($model, 'pass_number',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textInput();
+        echo $form->field($model, 'surname',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textInput(['maxlength' => true, 'placeholder' => 'Введите фамилию']);
+     echo $form->field($model, 'name',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textInput(['maxlength' => true, 'placeholder' => 'Введите имя']);
+     echo $form->field($model, 'middle_name',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textInput(['maxlength' => true, 'placeholder' => 'Введите отчество']);
+     echo $form->field($model, 'pass_number',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textInput(['placeholder' => 'Введите номер пропуска/удостоверения']);
         echo $form->field($model, 'department_id',['enableAjaxValidation' => true, 'enableClientValidation' => false])->dropDownList($depart,['prompt' => 'Выберите кафедру']);
     }
     ?>
@@ -43,11 +43,10 @@ use yii\helpers\Url;
     <!--  FORM FOR UPDATE  -->
     <?php
     if(Yii::$app->controller->action->id == 'update' && (isset(Yii::$app->user->identity->access_level) && (Yii::$app->user->identity->access_level >= 50))) {
-
-        echo $form->field($model, 'name',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textInput(['maxlength' => true]);
-        echo $form->field($model, 'surname',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textInput(['maxlength' => true]);
-        echo $form->field($model, 'middle_name',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textInput(['maxlength' => true]);
-        echo $form->field($model, 'comment',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textarea(['rows' => 2]);
+        echo $form->field($model, 'surname',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textInput(['maxlength' => true, 'placeholder' => 'Введите фамилию']);
+        echo $form->field($model, 'name',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textInput(['maxlength' => true, 'placeholder' => 'Введите имя']);
+        echo $form->field($model, 'middle_name',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textInput(['maxlength' => true, 'placeholder' => 'Введите отчество']);
+        echo $form->field($model, 'comment',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textarea(['rows' => 2, 'placeholder' => 'Введите комментарий']);
         echo $form->field($model, 'department_id',['enableAjaxValidation' => true, 'enableClientValidation' => false])->dropDownList($depart,['prompt' => 'Выберите кафедру']);
 
     }

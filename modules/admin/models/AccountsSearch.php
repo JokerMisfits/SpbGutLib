@@ -17,7 +17,9 @@ class AccountsSearch extends Accounts
     {
         return [
             [['id', 'access_level', 'parent_id', 'pass_number', 'department_id'], 'integer'],
-            [['username', 'name', 'surname', 'middle_name'], 'safe'],
+            ['email', 'string', 'max' => 255],
+            ['username', 'string', 'max' => 32],
+            [['name', 'surname', 'middle_name'], 'string', 'max' => 20],
             ['username', 'match', 'pattern' => '/^[a-z]\w*$/i','message' => '{attribute} должен начинаться и содержать символы только латинского алфавита'],
         ];
     }
@@ -66,19 +68,18 @@ class AccountsSearch extends Accounts
             return $dataProvider;
         }
 
-        // grid filtering conditions
+        // Фильтры поиска (Выпадающие меню + точные значения)
         $query->andFilterWhere([
             'id' => $this->id,
             'access_level' => $this->access_level,
+            'department_id' => $this->department_id,
         ]);
 
         $query->andFilterWhere(['like', 'username', $this->username])
-            ->andFilterWhere(['like', 'name', $this->name])
             ->andFilterWhere(['like', 'surname', $this->surname])
+            ->andFilterWhere(['like', 'name', $this->name])
             ->andFilterWhere(['like', 'middle_name', $this->middle_name])
-            ->andFilterWhere(['like', 'parent_id', $this->parent_id])
-            ->andFilterWhere(['like', 'pass_number', $this->pass_number])
-            ->andFilterWhere(['like', 'department_id', $this->department_id]);
+            ->andFilterWhere(['like', 'pass_number', $this->pass_number]);
 
         return $dataProvider;
     }

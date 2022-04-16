@@ -18,6 +18,10 @@ namespace app\modules\admin\models;
  */
 class People extends \yii\db\ActiveRecord
 {
+
+    const SCENARIO_CREATE = 'create';
+    const SCENARIO_UPDATE = 'update';
+
     /**
      * {@inheritdoc}
      */
@@ -34,14 +38,16 @@ class People extends \yii\db\ActiveRecord
         return [
             [['name', 'surname', 'middle_name', 'pass_number', 'department_id'], 'required'],
             [['access_level', 'child_id', 'pass_number', 'department_id'], 'integer'],
-            ['comment', 'string','min' => 4],
-            ['comment', 'string','max' => 255],
+            ['comment', 'default', 'value' => null, 'on' => self::SCENARIO_CREATE],
+            ['comment', 'string', 'min' => 4, 'on' => self::SCENARIO_UPDATE],
+            ['comment','string', 'max' => 255],
             ['books', 'string'],
             [['name', 'surname', 'middle_name'], 'string', 'max' => 20],
-            [['pass_number'], 'unique'],
-            [['child_id'], 'unique'],
+            ['pass_number', 'unique', 'message' => 'Номер пропуска/удостоверения "{value}" уже занят'],
+            ['child_id', 'unique'],
             ['pass_number', 'match', 'pattern' => '/^[0-9]{4,25}$/','message' => '{attribute} должен состоять минимум из 4 чисел, максимум 25.'],
-            [['name', 'surname', 'middle_name', 'pass_number', 'comment'], 'trim'],
+            [['name', 'surname', 'middle_name'], 'trim'],
+            ['comment', 'trim', 'on' => self::SCENARIO_UPDATE],// Иначе trim удаляет null, для сценария create
         ];
     }
 
@@ -76,11 +82,24 @@ class People extends \yii\db\ActiveRecord
             'surname' => 'Фамилия',
             'middle_name' => 'Отчество',
             'access_level' => 'Уровень доступа',
-            'comment' => 'Коментарий',
+            'comment' => 'Комментарий',
             'books' => 'Книги',
             'child_id' => 'Аккаунт',
             'pass_number' => 'Номер пропуска',
             'department_id' => 'Кафедра',
         ];
     }
+
+    public function beforeSave($insert){
+        if (parent::beforeSave('beforeInsert')) {
+            if($this->comment != null){
+                $this->comment = trim($this->comment);
+                if($this->comment == ''){
+                    $this->comment = null;
+                }
+            }
+        }
+        return true;
+    }
+
 }
