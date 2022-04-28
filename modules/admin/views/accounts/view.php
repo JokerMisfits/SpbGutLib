@@ -6,15 +6,17 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model app\modules\admin\models\Accounts */
 
-$this->title = $model->surname . ' ' . $model->name . ' ' . $model->middle_name;
-\yii\web\YiiAsset::register($this);
+    $this->title = $model->surname . ' ' . $model->name . ' ' . $model->middle_name;
+    yii\web\YiiAsset::register($this);
+
+    $access = 0;
+    if(isset(Yii::$app->user->identity->access_level)){
+        $access = Yii::$app->user->identity->access_level;
+    }
+
 ?>
 
-<style>
-    body{
-        margin-top: 50px;
-    }
-</style>
+<style>body{margin-top: 50px;}</style>
 
 <div class="accounts-view">
 
@@ -22,21 +24,21 @@ $this->title = $model->surname . ' ' . $model->name . ' ' . $model->middle_name;
 
     <p>
         <?php
-            if((isset(Yii::$app->user->identity->access_level) && (Yii::$app->user->identity->access_level >= 50))){
-                if(Yii::$app->user->identity->access_level == 50){
-                    if(Yii::$app->user->identity->id == $model->id){
+            if($access >= 50){
+                if($access == 50){
+                    if(isset(Yii::$app->user->identity->id) && Yii::$app->user->identity->id == $model->id){
                         echo Html::a('Редактировать данные', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
                     }
-                    elseif(Yii::$app->user->identity->access_level > $model->access_level){
+                    elseif($access > $model->access_level){
                         echo Html::a('Редактировать данные', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
                     }
                 }
-                elseif(Yii::$app->user->identity->access_level == 100){
-                    if(Yii::$app->user->identity->id == $model->id){
+                elseif($access == 100){
+                    if(isset(Yii::$app->user->identity->id) && Yii::$app->user->identity->id == $model->id){
                         echo Html::a('Редактировать данные', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
                     }
                     else{
-                        if(Yii::$app->user->identity->access_level > $model->access_level){
+                        if($access > $model->access_level){
                             echo Html::a('Редактировать данные', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
                             echo Html::a('Удалить аккаунт', ['delete', 'id' => $model->id], [
                                 'class' => 'btn btn-danger',

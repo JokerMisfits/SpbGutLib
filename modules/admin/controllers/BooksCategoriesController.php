@@ -22,8 +22,7 @@ class BooksCategoriesController extends AppAdminController
     /**
      * {@inheritdoc}
      */
-    public function behaviors()
-    {
+    public function behaviors() : array{
         return [
             'verbs' => [
                 'class' => VerbFilter::className(),
@@ -49,10 +48,12 @@ class BooksCategoriesController extends AppAdminController
      */
     public function actionIndex()
     {
-        if (Yii::$app->user->identity->access_level < 50) {
+
+        if(!isset(Yii::$app->user->identity->access_level) || Yii::$app->user->identity->access_level < 50){
             $this->AccessDenied();
             return $this->goHome();
         }
+
         $searchModel = new BooksCategoriesSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
@@ -70,10 +71,11 @@ class BooksCategoriesController extends AppAdminController
      */
     public function actionView($id)
     {
-        if (Yii::$app->user->identity->access_level < 50) {
+        if(!isset(Yii::$app->user->identity->access_level) || Yii::$app->user->identity->access_level < 50){
             $this->AccessDenied();
             return $this->goHome();
         }
+
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
@@ -87,14 +89,17 @@ class BooksCategoriesController extends AppAdminController
     public function actionCreate()
     {
         $model = new BooksCategories();
-        if (Yii::$app->user->identity->access_level < 50) {
+
+        if(!isset(Yii::$app->user->identity->access_level) || Yii::$app->user->identity->access_level < 50){
             $this->AccessDenied();
             return $this->goHome();
         }
+
         if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
             Yii::$app->response->format = Response::FORMAT_JSON;
             return ActiveForm::validate($model);
         }
+
         if ($model->load(Yii::$app->request->post())) {
             $attributes = ['name'];
             if($this->checkWhiteSpaces($model, (array)$attributes) == false){
@@ -135,10 +140,11 @@ class BooksCategoriesController extends AppAdminController
      */
     public function actionUpdate($id)
     {
-        if (Yii::$app->user->identity->access_level < 50) {
+        if(!isset(Yii::$app->user->identity->access_level) || Yii::$app->user->identity->access_level < 50){
             $this->AccessDenied();
             return $this->goHome();
         }
+
         $model = $this->findModel($id);
         if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
             Yii::$app->response->format = Response::FORMAT_JSON;
@@ -191,11 +197,13 @@ class BooksCategoriesController extends AppAdminController
      */
     public function actionDelete($id)
     {
-        if (Yii::$app->user->identity->access_level < 100) {
+        if(!isset(Yii::$app->user->identity->access_level) || Yii::$app->user->identity->access_level < 100){
             $this->AccessDenied();
             return $this->goHome();
         }
+
         $books = Books::find()->where(['category_id' => $id])->one();
+
         if($books == null){
             $model = $this->findModel($id);
             $transaction = Yii::$app->db->beginTransaction();

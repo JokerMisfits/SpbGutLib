@@ -6,15 +6,12 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model app\modules\admin\models\Department */
 
-$this->title = $model->name;
-\yii\web\YiiAsset::register($this);
+    $this->title = $model->name;
+    yii\web\YiiAsset::register($this);
+
 ?>
 
-<style>
-    body{
-        margin-top: 50px;
-    }
-</style>
+<style>body{margin-top: 50px;}</style>
 
 <div class="department-view">
 

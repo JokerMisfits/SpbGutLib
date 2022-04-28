@@ -1,6 +1,5 @@
 <?php
 
-
 namespace app\modules\admin\controllers;
 
 use yii\base\Model;
@@ -10,8 +9,7 @@ use Yii;
 
 class AppAdminController extends Controller
 {
-    public function behaviors()
-    {
+    public function behaviors() : array{
         return [
             'access' => [
                 'class' => AccessControl::className(),
@@ -35,7 +33,7 @@ class AppAdminController extends Controller
         Yii::$app->getSession()->setFlash('error', 'Доступ запрещен!');
     }
 
-    public function checkWhiteSpaces(Model $model, $attributes){
+    public function checkWhiteSpaces(Model $model, $attributes) : bool{
         $count = count($attributes);
         $check = true;
         for($i = 0; $i < $count; $i++){
@@ -50,9 +48,8 @@ class AppAdminController extends Controller
         return $check;
     }
 
-    public function beforeAction($action)
-    {
-        if(Yii::$app->user->isGuest == false){
+    public function beforeAction($action) : bool{
+        if(!Yii::$app->user->isGuest && isset(Yii::$app->user->identity->id)){
             $id = Yii::$app->user->identity->id;
             Yii::$app->db->createCommand()
                 ->update('accounts', ['last_activity_timestamp' => time()], "id = $id")

@@ -4,6 +4,7 @@ use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $model app\modules\admin\models\Department */
+
 ?>
 
 <div class="department-update">

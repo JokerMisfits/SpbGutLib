@@ -13,8 +13,7 @@ class BooksCategoriesSearch extends BooksCategories
     /**
      * {@inheritdoc}
      */
-    public function rules()
-    {
+    public function rules() : array{
         return [
             ['id', 'integer'],
             ['name', 'string', 'max' => 255],
@@ -25,8 +24,7 @@ class BooksCategoriesSearch extends BooksCategories
     /**
      * {@inheritdoc}
      */
-    public function scenarios()
-    {
+    public function scenarios() : array{
         // bypass scenarios() implementation in the parent class
         return Model::scenarios();
     }
@@ -38,7 +36,7 @@ class BooksCategoriesSearch extends BooksCategories
      *
      * @return ActiveDataProvider
      */
-    public function search($params)
+    public function search(array $params) : ActiveDataProvider
     {
         $query = BooksCategories::find();
 

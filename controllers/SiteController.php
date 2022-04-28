@@ -57,7 +57,7 @@ class SiteController extends AppController
      *
      * @return string
      */
-    public function actionIndex()
+    public function actionIndex() : string
     {
         return $this->render('index');
     }
@@ -138,11 +138,11 @@ class SiteController extends AppController
     /**
      * Displays about page.
      *
-     * @return string
+     * @return mixed
      */
     public function actionAbout()
     {
-        if (Yii::$app->user->identity->access_level < 50) {
+        if(Yii::$app->user->isGuest || (isset(Yii::$app->user->identity->access_level) && Yii::$app->user->identity->access_level < 50)){
             $this->AccessDenied();
             return $this->goHome();
         }
@@ -151,15 +151,21 @@ class SiteController extends AppController
             ]);
 
     }
+
+    /**
+     * Displays update page.
+     *
+     * @return mixed
+     */
     public function actionUpdate(){
-        if (Yii::$app->user->identity->access_level < 50) {
+        if(Yii::$app->user->isGuest){
             $this->AccessDenied();
             return $this->goHome();
         }
         return $this->render('update');
     }
 
-    private function getAdmins(){
+    private function getAdmins(): array{
         return (new \yii\db\Query())
             ->select('name,surname,middle_name,email')
             ->from('accounts')
@@ -167,7 +173,7 @@ class SiteController extends AppController
             ->all();
     }
 
-    private function getSubjects(){
+    private function getSubjects(): array{
         return ['Получение аккаунта','Сообщение об ошибке'];
     }
 }

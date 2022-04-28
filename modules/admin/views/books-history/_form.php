@@ -9,13 +9,10 @@ use yii\helpers\Url;
 /* @var $books */
 /* @var $people */
 /* @var $form yii\widgets\ActiveForm */
+
 ?>
 
-<style>
-    body{
-        margin-top: 50px;
-    }
-</style>
+<style>body{margin-top: 50px;}</style>
 
 <div class="books-history-form">
 

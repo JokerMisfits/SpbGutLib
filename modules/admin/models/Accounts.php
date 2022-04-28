@@ -32,10 +32,10 @@ class Accounts extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
-    {
+    public static function tableName() : string{
         return 'accounts';
     }
+
     public function getAccess(){
         $rows = (new \yii\db\Query())
             ->select('access_name')
@@ -44,6 +44,7 @@ class Accounts extends \yii\db\ActiveRecord
             ->one();
         return $rows['access_name'];
     }
+
     public function getDepart(){
         $rows = (new \yii\db\Query())
             ->select('name')
@@ -52,15 +53,15 @@ class Accounts extends \yii\db\ActiveRecord
             ->one();
         return $rows['name'];
     }
-    public function getParent(){
+
+    public function getParent() : int{
         return $this->parent_id;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function rules()
-    {
+    public function rules() : array{
         return [
             [['username', 'password', 'name', 'surname', 'middle_name', 'pass_number', 'department_id'], 'required'],
             ['password_confirm', 'required', 'on' => self::SCENARIO_FORM],
@@ -95,8 +96,7 @@ class Accounts extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
-    {
+    public function attributeLabels() : array{
         return [
             'id' => 'ID',
             'username' => 'Логин',
@@ -117,22 +117,20 @@ class Accounts extends \yii\db\ActiveRecord
         ];
     }
 
-    public function normalizePhone($value) {
+    public function normalizePhone($value) : string {
         if((string)$value[0] == 7){
             $value[0] = 8;
         }
         return $value;
     }
 
-    public function fields()// Удаляем поля, содержащие конфиденциальную информацию
-    {
+    public function fields() : array{
         $fields = parent::fields();
         unset($fields['password'], $fields['password_confirm'], $fields['auth_key']);
         return $fields;
     }
 
-    public function beforeValidate()
-    {
+    public function beforeValidate() : bool{
         if (parent::beforeValidate()) {
             if($this->scenario == self::SCENARIO_SAVE){
                 $this->password_confirm = $this->password;
@@ -141,7 +139,7 @@ class Accounts extends \yii\db\ActiveRecord
         return true;
     }
 
-    public function beforeSave($insert){
+    public function beforeSave($insert) : bool{
         if (parent::beforeSave('beforeInsert')) {
             if($this->email != null){
                 $this->email = trim($this->email);

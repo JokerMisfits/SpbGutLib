@@ -63,7 +63,7 @@ $close = '<svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.
             <div id="collapseTwo_inner" class="panel-collapse collapse">
                 <div class="panel-body">
                     <span> 1.Переходим во вкладку Профиль</span><br>
-                    <span> 2.Выбираем пункт меню Users->Create </span><br>
+                    <span> 2.Выбираем пункт меню Пользователи->Создать </span><br>
                     <span> 3.Заполняем все поля </span><br>
                     <span> 4.Нажимаем сохранить </span><br>
                     <span> 5.Готово! </span>
@@ -80,7 +80,7 @@ $close = '<svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.
             <div id="collapseThird_inner" class="panel-collapse collapse">
                 <div class="panel-body">
                     <span> 1.Переходим во вкладку Профиль</span><br>
-                    <span> 2.Выбираем пункт меню Books->Books</span><br>
+                    <span> 2.Выбираем пункт меню Книги->Книги</span><br>
                     <span> 2.Нажимаем кнопку "Добавить новую книгу"</span><br>
                     <span> 3.Заполняем все поля</span><br>
                     <span> 4.Нажимаем сохранить</span><br>
@@ -98,7 +98,7 @@ $close = '<svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.
             <div id="collapseFourth_inner" class="panel-collapse collapse">
                 <div class="panel-body">
                     <span> 1.Переходим во вкладку Профиль</span><br>
-                    <span> 2.Выбираем пункт меню Books->Categories</span><br>
+                    <span> 2.Выбираем пункт меню Книги->Категории</span><br>
                     <span> 2.Нажимаем кнопку "Добавить новую категорию"</span><br>
                     <span> 3.Заполняем все поля</span><br>
                     <span> 4.Нажимаем сохранить</span><br>
@@ -116,7 +116,7 @@ $close = '<svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.
             <div id="collapseFifth_inner" class="panel-collapse collapse">
                 <div class="panel-body">
                     <span> 1.Переходим во вкладку Профиль</span><br>
-                    <span> 2.Выбираем пункт меню Books->Subjects</span><br>
+                    <span> 2.Выбираем пункт меню Книги->Тематики</span><br>
                     <span> 2.Нажимаем кнопку "Добавить новую тематику"</span><br>
                     <span> 3.Заполняем все поля</span><br>
                     <span> 4.Нажимаем сохранить</span><br>
@@ -134,7 +134,7 @@ $close = '<svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.
             <div id="collapseSixth_inner" class="panel-collapse collapse">
                 <div class="panel-body">
                     <span> 1.Переходим во вкладку Профиль</span><br>
-                    <span> 2.Выбираем пункт меню Books->Tasks</span><br>
+                    <span> 2.Выбираем пункт меню Книги->Заявки</span><br>
                     <span> 2.Нажимаем кнопку "Добавить новую запись"</span><br>
                     <span> 3.Заполняем все поля</span><br>
                     <span> 4.При начале ввода символов в выпадающий список активируется поиск</span><br>
@@ -170,7 +170,7 @@ $close = '<svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.
             <div id="collapseEighth_inner" class="panel-collapse collapse">
                 <div class="panel-body">
                     <span> 1.Переходим во вкладку Профиль</span><br>
-                    <span> 2.Выбираем пункт меню Books->Tasks</span><br>
+                    <span> 2.Выбираем пункт меню Книги->Заявки</span><br>
                     <span> 3.Нажимаем на ссылку "Закрыть заявку"</span><br>
                     <span> 4.Готово! </span><br>
                     <span> 5.Закрытие заявки возвращает то количество книг, которое было выдано! </span>
@@ -187,7 +187,7 @@ $close = '<svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.
             <div id="collapseNinth_inner" class="panel-collapse collapse">
                 <div class="panel-body">
                     <span> 1.Переходим во вкладку Профиль</span><br>
-                    <span> 2.Выбираем пункт меню Books->Tasks</span><br>
+                    <span> 2.Выбираем пункт меню Книги->Заявки</span><br>
                     <span> 3.Нажимаем на ссылку "Закрыть заявку"</span><br>
                     <span> 4.Нажимаем кнопку "Добавить новую запись"</span><br>
                     <span> 5.Заполняем все поля</span><br>
@@ -241,7 +241,7 @@ $close = '<svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.
             <div id="collapseTwelve_inner" class="panel-collapse collapse">
                 <div class="panel-body">
                     <span> 1.Переходим во вкладку Профиль</span><br>
-                    <span> 2.Выбираем пункт меню Users->Read</span><br>
+                    <span> 2.Выбираем пункт меню Пользователи->Просмотр</span><br>
                     <span> 3.Находим нужного пользователя</span><br>
                     <span> 4.В колонке "Книги" если у него есть активные заявки на книги, будет доступна ссылка</span><br>
                     <span> 5.Переходим по данной ссылке</span><br>
@@ -254,13 +254,13 @@ $close = '<svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h4 class="panel-title">
-                    <a data-toggle="collapse" id="iconContainer12" href="#collapseThirteenth_inner"> <div class="text-link">Почему не получается удалить:<br>Категории,тематики или кафедры?</div> <p id="icon12" class="pull-right icon mt-2"><?= $close ?></p></a>
+                    <a data-toggle="collapse" id="iconContainer12" href="#collapseThirteenth_inner"> <div class="text-link">Почему не получается удалить:<br>Категории, тематики или кафедры?</div> <p id="icon12" class="pull-right icon mt-2"><?= $close ?></p></a>
                 </h4>
             </div>
             <div id="collapseThirteenth_inner" class="panel-collapse collapse">
                 <div class="panel-body">
                     <span> 1.У вас недостаточно прав доступа</span><br>
-                    <span> 2.Эта категория,тематика или кафедра, уже используется,вам нужно изменить данные параметр в тех записях в которой он присутствует и повторить попытку снова!</span>
+                    <span> 2.Эта категория, тематика или кафедра, уже используется, вам нужно изменить данные параметр в тех записях в которой он присутствует и повторить попытку снова!</span>
                 </div>
             </div>
         </div>
@@ -273,8 +273,7 @@ $close = '<svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.
             </div>
             <div id="collapseFourteenth_inner" class="panel-collapse collapse">
                 <div class="panel-body">
-                    <span> 1.Петрова Ольга Борисовна <span class="text-info"><a href="mailto:petromay@yandex.ru?subject=LitDB bug report&body=Опишите вашу проблему">petromay@yandex.ru</a></span></span><br>
-                    <span> 2.Щецко Андрей Андреевич <span class="text-info"><a href="mailto:lpwalker87@mail.ru?subject=LitDB bug report&body=Опишите вашу проблему">lpwalker87@mail.ru</a></span></span>
+                    <span> 1.Щецко Андрей Андреевич <span class="text-info"><a href="mailto:lpwalker87@mail.ru?subject=LitDB bug report&body=Опишите вашу проблему">lpwalker87@mail.ru</a></span></span>
                 </div>
             </div>
         </div>

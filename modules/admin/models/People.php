@@ -25,16 +25,14 @@ class People extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
-    {
+    public static function tableName() : string{
         return 'people';
     }
 
     /**
      * {@inheritdoc}
      */
-    public function rules()
-    {
+    public function rules() : array{
         return [
             [['name', 'surname', 'middle_name', 'pass_number', 'department_id'], 'required'],
             [['access_level', 'child_id', 'pass_number', 'department_id'], 'integer'],
@@ -74,8 +72,7 @@ class People extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
-    {
+    public function attributeLabels() : array{
         return [
             'id' => 'ID',
             'name' => 'Имя',
@@ -90,7 +87,7 @@ class People extends \yii\db\ActiveRecord
         ];
     }
 
-    public function beforeSave($insert){
+    public function beforeSave($insert) : bool{
         if (parent::beforeSave('beforeInsert')) {
             if($this->comment != null){
                 $this->comment = trim($this->comment);

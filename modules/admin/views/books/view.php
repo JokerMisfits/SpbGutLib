@@ -7,14 +7,11 @@ use yii\widgets\DetailView;
 /* @var $model app\modules\admin\models\Books */
 
 $this->title = $model->name;
-\yii\web\YiiAsset::register($this);
+yii\web\YiiAsset::register($this);
+
 ?>
 
-<style>
-    body{
-        margin-top: 50px;
-    }
-</style>
+<style>body{margin-top: 50px;}</style>
 
 <div class="books-view">
 

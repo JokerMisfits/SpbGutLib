@@ -22,8 +22,7 @@ class DepartmentsController extends AppAdminController
     /**
      * {@inheritdoc}
      */
-    public function behaviors()
-    {
+    public function behaviors() : array{
         return [
             'verbs' => [
                 'class' => VerbFilter::className(),
@@ -49,10 +48,11 @@ class DepartmentsController extends AppAdminController
      */
     public function actionIndex()
     {
-        if (Yii::$app->user->identity->access_level < 50) {
+        if(!isset(Yii::$app->user->identity->access_level) || Yii::$app->user->identity->access_level < 50){
             $this->AccessDenied();
             return $this->goHome();
         }
+
         $searchModel = new DepartmentsSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
@@ -70,10 +70,11 @@ class DepartmentsController extends AppAdminController
      */
     public function actionView($id)
     {
-        if (Yii::$app->user->identity->access_level < 50) {
+        if(!isset(Yii::$app->user->identity->access_level) || Yii::$app->user->identity->access_level < 50){
             $this->AccessDenied();
             return $this->goHome();
         }
+
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
@@ -86,10 +87,11 @@ class DepartmentsController extends AppAdminController
      */
     public function actionCreate()
     {
-        if (Yii::$app->user->identity->access_level < 100) {
+        if(!isset(Yii::$app->user->identity->access_level) || Yii::$app->user->identity->access_level < 100){
             $this->AccessDenied();
             return $this->goHome();
         }
+
         $model = new Department();
         if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
             Yii::$app->response->format = Response::FORMAT_JSON;
@@ -135,10 +137,11 @@ class DepartmentsController extends AppAdminController
      */
     public function actionUpdate($id)
     {
-        if (Yii::$app->user->identity->access_level < 100) {
+        if(!isset(Yii::$app->user->identity->access_level) || Yii::$app->user->identity->access_level < 100){
             $this->AccessDenied();
             return $this->goHome();
         }
+
         $model = $this->findModel($id);
         if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
             Yii::$app->response->format = Response::FORMAT_JSON;
@@ -191,10 +194,11 @@ class DepartmentsController extends AppAdminController
      */
     public function actionDelete($id)
     {
-        if (Yii::$app->user->identity->access_level < 100) {
+        if(!isset(Yii::$app->user->identity->access_level) || Yii::$app->user->identity->access_level < 100){
             $this->AccessDenied();
             return $this->goHome();
         }
+
         $people = People::find()->where(['department_id' => $id])->one();
         if($people == null){
             $model = $this->findModel($id);

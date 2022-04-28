@@ -13,8 +13,7 @@ class BooksSearch extends Books
     /**
      * {@inheritdoc}
      */
-    public function rules()
-    {
+    public function rules() : array{
         return [
             [['id', 'category_id', 'subject_id', 'count', 'rest', 'stock'], 'integer'],
             [['name', 'author', 'date', 'keywords', 'ISBN', 'ISSN', 'publisher', 'publish_date', 'annotation'], 'safe'],
@@ -26,8 +25,7 @@ class BooksSearch extends Books
     /**
      * {@inheritdoc}
      */
-    public function scenarios()
-    {
+    public function scenarios(): array{
         // bypass scenarios() implementation in the parent class
         return Model::scenarios();
     }
@@ -39,8 +37,7 @@ class BooksSearch extends Books
      *
      * @return ActiveDataProvider
      */
-    public function search($params)
-    {
+    public function search(array $params) : ActiveDataProvider{
         $query = Books::find();
 
         // add conditions that should always apply here

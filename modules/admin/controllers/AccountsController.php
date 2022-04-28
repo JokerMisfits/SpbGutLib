@@ -23,8 +23,7 @@ class AccountsController extends AppAdminController
     /**
      * {@inheritdoc}
      */
-    public function behaviors()
-    {
+    public function behaviors() : array{
         return [
             'verbs' => [
                 'class' => VerbFilter::className(),
@@ -48,12 +47,14 @@ class AccountsController extends AppAdminController
      * Lists all Accounts models.
      * @return mixed
      */
-    public function actionIndex()// Доступ модератор и выше
+    public function actionIndex()
     {
-        if (Yii::$app->user->identity->access_level < 50) {
+
+        if(!isset(Yii::$app->user->identity->access_level) || Yii::$app->user->identity->access_level < 50){
             $this->AccessDenied();
             return $this->goHome();
         }
+
         $searchModel = new AccountsSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         $access = new AccessLevel();
@@ -73,9 +74,9 @@ class AccountsController extends AppAdminController
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionView($id)// Доступ модератор и выше
+    public function actionView($id)
     {
-        if (Yii::$app->user->identity->access_level < 50) {
+        if(!isset(Yii::$app->user->identity->access_level) || Yii::$app->user->identity->access_level < 50){
             $this->AccessDenied();
             return $this->goHome();
         }
@@ -91,12 +92,13 @@ class AccountsController extends AppAdminController
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreate()// Доступ администратор и выше
+    public function actionCreate()
     {
-        if (Yii::$app->user->identity->access_level < 100) {
+        if(!isset(Yii::$app->user->identity->access_level) || Yii::$app->user->identity->access_level < 100){
             $this->AccessDenied();
             return $this->goHome();
         }
+
         $model = new Accounts();
         $model->scenario = Accounts::SCENARIO_FORM;
         if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
@@ -135,7 +137,7 @@ class AccountsController extends AppAdminController
             $model->name = ucfirst($model->name);
             $model->middle_name = ucfirst($model->middle_name);
             $db = Yii::$app->db;
-                if ($model->parent_id == null) {
+                if($model->parent_id == null) {
                     $transaction = $db->beginTransaction();
                     try {
                         $db->createCommand()->insert('people', array(
@@ -210,14 +212,16 @@ class AccountsController extends AppAdminController
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionUpdate($id)// Доступ модератор и выше
+    public function actionUpdate($id)
     {
         /* @var People $child_model */
         $model = $this->findModel($id);
-        if(Yii::$app->user->identity->access_level < 50){
+
+        if(!isset(Yii::$app->user->identity->access_level) || Yii::$app->user->identity->access_level < 50){
             $this->AccessDenied();
             return $this->goHome();
         }
+
         if(Yii::$app->user->identity->access_level == 50){
             if(Yii::$app->user->identity->access_level == $model->access_level && Yii::$app->user->identity->id != $model->id){
                 Yii::$app->getSession()->setFlash('error', 'Запрещено редактировать профили других модераторов!');
@@ -228,16 +232,19 @@ class AccountsController extends AppAdminController
                 return $this->redirect('/admin/accounts');
             }
         }
+
         if(Yii::$app->user->identity->access_level == 100){
             if(Yii::$app->user->identity->access_level == $model->access_level && Yii::$app->user->identity->id != $model->id){
                 Yii::$app->getSession()->setFlash('error', 'Запрещено редактировать профили других администраторов!');
                 return $this->redirect('/admin/accounts');
             }
         }
+
         if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
             Yii::$app->response->format = Response::FORMAT_JSON;
             return ActiveForm::validate($model);
         }
+
         if($model->load(Yii::$app->request->post())) {
             $attributes = ['surname', 'name', 'middle_name'];
             if($this->checkWhiteSpaces($model, (array)$attributes) == false){
@@ -336,7 +343,7 @@ class AccountsController extends AppAdminController
 
     }
 
-    private function getDepart(){
+    private function getDepart() : array{
         $department = Department::find()->orderBy(['name' => SORT_ASC])->all();
         $count = count($department);
         $depart = [];
@@ -346,7 +353,7 @@ class AccountsController extends AppAdminController
         return $depart;
     }
 
-    private function getAccess(){
+    private function getAccess() : array{
         $access = AccessLevel::find()->all();
         $count = count($access);
         $level = [];
@@ -435,13 +442,15 @@ class AccountsController extends AppAdminController
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionDelete($id)// Доступ администратор и выше
+    public function actionDelete($id)
     {
-        if (Yii::$app->user->identity->access_level < 100) {
+        if(!isset(Yii::$app->user->identity->access_level) || Yii::$app->user->identity->access_level < 100){
             $this->AccessDenied();
             return $this->goHome();
         }
+
         $model = $this->findModel($id);
+
         if($model->id == Yii::$app->user->identity->id){
             Yii::$app->getSession()->setFlash('error', 'Невозможно удалить свой аккаунт!');
             return $this->redirect('/admin/accounts');

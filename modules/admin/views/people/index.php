@@ -11,14 +11,16 @@ use yii\helpers\Url;
 /* @var $access app\modules\admin\models\AccessLevel */
 /* @var $department app\modules\admin\models\Department */
 
-$this->title = 'Пользователи';
+    $this->title = 'Пользователи';
+
+    $access = 0;
+    if(isset(Yii::$app->user->identity->access_level)){
+        $access = Yii::$app->user->identity->access_level;
+    }
+
 ?>
 
-<style>
-    body{
-        margin-top: 50px;
-    }
-</style>
+<style>body{margin-top: 50px;}</style>
 
     <h1><?= Html::encode($this->title) ?></h1>
 
@@ -74,12 +76,12 @@ $this->title = 'Пользователи';
                     },
                     'filter' => Html::activeDropDownList($searchModel, 'department_id', ArrayHelper::map($department::find()->select('name,id')->asArray()->all(), 'id', 'name'),['class'=>'form-control','prompt' => 'Выберете кафедру']),
                 ],
-                Yii::$app->user->identity->access_level == 50 ? ([
+                $access == 50 ? ([
                     'class' => 'yii\grid\ActionColumn',
                     'template' => '{view}<br>{update}',
                 ]
                 ):(
-                Yii::$app->user->identity->access_level == 100 ? (
+                $access == 100 ? (
                 [
                     'class' => 'yii\grid\ActionColumn',
                     'template' => '{view}<br>{update}<br>{delete}'

@@ -7,14 +7,11 @@ use yii\grid\GridView;
 /* @var $searchModel app\modules\admin\models\DepartmentsSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Кафедры';
+    $this->title = 'Кафедры';
+
 ?>
 
-<style>
-    body{
-        margin-top: 50px;
-    }
-</style>
+<style>body{margin-top: 50px;}</style>
 
     <h1><?= Html::encode($this->title) ?></h1>
     <p>

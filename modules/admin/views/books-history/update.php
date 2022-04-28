@@ -6,6 +6,7 @@ use yii\helpers\Html;
 /* @var $model app\modules\admin\models\BooksHistory */
 /* @var $books */
 /* @var $people */
+
 ?>
 
 <div class="books-history-update">

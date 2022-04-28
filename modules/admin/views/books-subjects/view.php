@@ -6,15 +6,17 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model app\modules\admin\models\BooksSubjects */
 
-$this->title = $model->name;
-\yii\web\YiiAsset::register($this);
+    $this->title = $model->name;
+    yii\web\YiiAsset::register($this);
+
+    $access = 0;
+    if(isset(Yii::$app->user->identity->access_level)){
+        $access = Yii::$app->user->identity->access_level;
+    }
+
 ?>
 
-<style>
-    body{
-        margin-top: 50px;
-    }
-</style>
+<style>body{margin-top: 50px;}</style>
 
 <div class="books-subjects-view">
 
@@ -22,10 +24,10 @@ $this->title = $model->name;
 
     <p>
         <?php
-        if(Yii::$app->user->identity->access_level == 50){
+        if($access == 50){
             echo Html::a('Редактировать данные', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
         }
-        elseif(Yii::$app->user->identity->access_level == 100){
+        elseif($access == 100){
             echo Html::a('Редактировать данные', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
             echo Html::a('Удалить тематику', ['delete', 'id' => $model->id], [
                 'class' => 'btn btn-danger',

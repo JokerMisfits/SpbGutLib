@@ -10,12 +10,15 @@ use yii\helpers\Url;
 /* @var $level */
 /* @var $form yii\widgets\ActiveForm */
 
+    $access = 0;
+    if(isset(Yii::$app->user->identity->access_level)){
+        $access = Yii::$app->user->identity->access_level;
+    }
+
 ?>
 
 <style>
-    body{
-        margin-top: 50px;
-    }
+    body{margin-top: 50px;}
     @media(max-width: 1200px) {
         #reveal-password{
             padding: 0;
@@ -42,7 +45,7 @@ use yii\helpers\Url;
 <!--  FORM FOR CREATE  -->
 
     <?php
-    if(Yii::$app->controller->action->id == 'create' && (isset(Yii::$app->user->identity->access_level) && (Yii::$app->user->identity->access_level >= 100))){
+    if(Yii::$app->controller->action->id == 'create' && ($access >= 100)){
         $this->registerJs("jQuery('#reveal-password').change(function(){jQuery('#accounts-password').attr('type',this.checked?'text':'password');})");
         echo $form->field($model, 'username',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textInput(['maxlength' => true, 'placeholder' => 'Введите логин']);
         echo $form->field($model, 'password',['enableAjaxValidation' => true, 'enableClientValidation' => false,'selectors' =>
@@ -68,9 +71,9 @@ use yii\helpers\Url;
 
 <!--  FORM FOR UPDATE  -->
     <?php
-        if(Yii::$app->controller->action->id == 'update' && (isset(Yii::$app->user->identity->access_level) && (Yii::$app->user->identity->access_level >= 50))){
-            if(Yii::$app->user->identity->access_level == 50){
-                if(Yii::$app->user->identity->id == $model->id){
+        if(Yii::$app->controller->action->id == 'update' && ($access >= 50)){
+            if($access == 50){
+                if(isset(Yii::$app->user->identity->id) && Yii::$app->user->identity->id == $model->id){
                     echo $form->field($model, 'email',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textInput(['maxlength' => true, 'placeholder' => 'Введите email']);
                     echo $form->field($model, 'phone',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textInput(['maxlength' => true, 'placeholder' => 'Введите номер телефона']);
                     echo $form->field($model, 'department_id',['enableAjaxValidation' => true, 'enableClientValidation' => false])->dropDownList($depart);
@@ -84,8 +87,8 @@ use yii\helpers\Url;
                     echo $form->field($model, 'department_id',['enableAjaxValidation' => true, 'enableClientValidation' => false])->dropDownList($depart);
                 }
             }
-            elseif(Yii::$app->user->identity->access_level == 100){
-                if(Yii::$app->user->identity->id == $model->id){
+            elseif($access == 100){
+                if(isset(Yii::$app->user->identity->id) && Yii::$app->user->identity->id == $model->id){
                     echo $form->field($model, 'surname',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textInput(['maxlength' => true, 'placeholder' => 'Введите фамилию']);
                     echo $form->field($model, 'name',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textInput(['maxlength' => true, 'placeholder' => 'Введите имя']);
                     echo $form->field($model, 'middle_name',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textInput(['maxlength' => true, 'placeholder' => 'Введите отчество']);

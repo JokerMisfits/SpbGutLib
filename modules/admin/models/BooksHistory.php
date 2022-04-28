@@ -19,8 +19,7 @@ class BooksHistory extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
-    {
+    public static function tableName() : string{
         return 'books_history';
     }
     public function getBook(){
@@ -34,8 +33,7 @@ class BooksHistory extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function rules()
-    {
+    public function rules() : array{
         return [
             [['book_id', 'user_id', 'date_from', 'count'], 'required'],
             [['book_id', 'user_id', 'active', 'count'], 'integer'],
@@ -53,8 +51,7 @@ class BooksHistory extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
-    {
+    public function attributeLabels() : array{
         return [
             'id' => 'ID',
             'book_id' => 'Название книги',
@@ -67,7 +64,7 @@ class BooksHistory extends \yii\db\ActiveRecord
         ];
     }
 
-    public function beforeSave($insert){
+    public function beforeSave($insert) : bool{
         if (parent::beforeSave('beforeInsert')) {
             if($this->comment != null){
                 $this->comment = trim($this->comment);

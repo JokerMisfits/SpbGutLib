@@ -13,8 +13,7 @@ class DepartmentsSearch extends Department
     /**
      * {@inheritdoc}
      */
-    public function rules()
-    {
+    public function rules() : array{
         return [
             ['id', 'integer'],
             ['name', 'string', 'max' => 255],
@@ -25,8 +24,7 @@ class DepartmentsSearch extends Department
     /**
      * {@inheritdoc}
      */
-    public function scenarios()
-    {
+    public function scenarios() : array{
         // bypass scenarios() implementation in the parent class
         return Model::scenarios();
     }
@@ -38,8 +36,7 @@ class DepartmentsSearch extends Department
      *
      * @return ActiveDataProvider
      */
-    public function search($params)
-    {
+    public function search(array $params) : ActiveDataProvider{
         $query = Department::find();
 
         // add conditions that should always apply here

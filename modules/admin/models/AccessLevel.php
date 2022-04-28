@@ -13,7 +13,7 @@ class AccessLevel extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
+    public static function tableName() : string
     {
         return 'access_level';
     }
@@ -21,7 +21,7 @@ class AccessLevel extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function rules() : array
     {
         return [
             [['access_level', 'access_name'], 'required'],
@@ -33,7 +33,7 @@ class AccessLevel extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
+    public function attributeLabels() : array
     {
         return [
             'access_level' => 'Уровень доступа',

@@ -6,15 +6,18 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model app\modules\admin\models\BooksCategories */
 
-$this->title = $model->name;
-\yii\web\YiiAsset::register($this);
+    $this->title = $model->name;
+
+    yii\web\YiiAsset::register($this);
+
+    $access = 0;
+    if(isset(Yii::$app->user->identity->access_level)){
+        $access = Yii::$app->user->identity->access_level;
+    }
+
 ?>
 
-<style>
-    body{
-        margin-top: 50px;
-    }
-</style>
+<style>body{margin-top: 50px;}</style>
 
 <div class="books-categories-view">
 

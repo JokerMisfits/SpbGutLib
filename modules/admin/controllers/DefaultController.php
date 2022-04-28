@@ -20,12 +20,10 @@ class DefaultController extends AppAdminController
 
     /**
      * Renders the index view for the module
-     * @return string
+     * @return mixed
      */
-    public function actionIndex()
-    {
-
-        if(Yii::$app->user->isGuest == true){
+    public function actionIndex(){
+        if(Yii::$app->user->isGuest){
             $this->AccessDenied();
             return $this->goHome();
         }

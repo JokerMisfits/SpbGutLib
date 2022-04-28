@@ -8,13 +8,10 @@ use yii\helpers\Url;
 /* @var $model app\modules\admin\models\people */
 /* @var $form yii\widgets\ActiveForm */
 /* @var $depart */
+
 ?>
 
-<style>
-    body{
-        margin-top: 50px;
-    }
-</style>
+<style>body{margin-top: 50px;}</style>
 
 <div class="people-form">
 

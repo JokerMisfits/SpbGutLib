@@ -13,8 +13,7 @@ class PeopleSearch extends People
     /**
      * {@inheritdoc}
      */
-    public function rules()
-    {
+    public function rules() : array{
         return [
             [['id', 'access_level', 'child_id', 'pass_number', 'department_id'], 'integer'],
             [['name', 'surname', 'middle_name'], 'string', 'max' => 20],
@@ -27,8 +26,7 @@ class PeopleSearch extends People
     /**
      * {@inheritdoc}
      */
-    public function scenarios()
-    {
+    public function scenarios() : array{
         // bypass scenarios() implementation in the parent class
         return Model::scenarios();
     }
@@ -40,7 +38,7 @@ class PeopleSearch extends People
      *
      * @return ActiveDataProvider
      */
-    public function search($params)
+    public function search(array $params) : ActiveDataProvider
     {
         $query = people::find();
 

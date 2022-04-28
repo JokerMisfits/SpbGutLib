@@ -66,7 +66,7 @@
             </li>
                         <li>
                             <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Сервисы<span class="text-danger">(В разработке)</span></a>
-                            <ul class="collapse list-unstyled" id="pageSubmenuDELETEME"> <!-- DELETE DELETEME!! -->
+                            <ul class="collapse list-unstyled" id="pageSubmenuDELETEME">
                                 <li>
                                     <a href="#">Сменить пароль<span class="text-danger">(В разработке)</span></a>
                                 </li>
@@ -192,53 +192,6 @@
         </div>
     </div>
 </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 <!--<style>-->
 <!--    .admin-default-index-profile{-->

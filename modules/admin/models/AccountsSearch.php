@@ -13,8 +13,7 @@ class AccountsSearch extends Accounts
     /**
      * {@inheritdoc}
      */
-    public function rules()
-    {
+    public function rules() : array{
         return [
             [['id', 'access_level', 'parent_id', 'pass_number', 'department_id'], 'integer'],
             ['email', 'string', 'max' => 255],
@@ -27,8 +26,7 @@ class AccountsSearch extends Accounts
     /**
      * {@inheritdoc}
      */
-    public function scenarios()
-    {
+    public function scenarios(): array{
         // bypass scenarios() implementation in the parent class
         return Model::scenarios();
     }
@@ -40,7 +38,7 @@ class AccountsSearch extends Accounts
      *
      * @return ActiveDataProvider
      */
-    public function search($params)
+    public function search(array $params): ActiveDataProvider
     {
         $query = Accounts::find();
 

@@ -11,14 +11,17 @@ use yii\helpers\ArrayHelper;
 /* @var $book app\modules\admin\models\Books */
 /* @var $active app\modules\admin\models\BooksHistory */
 /* @var $count */
-$this->title = 'Заявки';
+
+    $this->title = 'Заявки';
+
+    $access = 0;
+    if(isset(Yii::$app->user->identity->access_level)){
+        $access = Yii::$app->user->identity->access_level;
+    }
+
 ?>
 
-<style>
-    body{
-        margin-top: 50px;
-    }
-</style>
+<style>body{margin-top: 50px;}</style>
 
     <h1><?= Html::encode($this->title) ?></h1>
 
@@ -26,7 +29,7 @@ $this->title = 'Заявки';
     <?= Html::a('Добавить новую запись', ['create'], ['class' => 'btn btn-success']) ?>
     <?= Html::a('Сбросить поиск', ['/admin/books-history'], ['class' => 'btn btn-primary']) ?>
     <?php
-        if(Yii::$app->user->identity->access_level >= 100 && $count > 0){
+        if($access >= 100 && $count > 0){
             echo Html::a('Удалить неактивные заявки', ['active'], [
                 'class' => 'btn btn-danger',
                 'data' => [
@@ -83,12 +86,12 @@ $this->title = 'Заявки';
                     'format' => 'raw',
                 ],
 
-                Yii::$app->user->identity->access_level == 50 ? ([
+                $access == 50 ? ([
                     'class' => 'yii\grid\ActionColumn',
                     'template' => '{view}<br>{update}',
                 ]
                 ):(
-                Yii::$app->user->identity->access_level == 100 ? (
+                $access == 100 ? (
                 [
                     'class' => 'yii\grid\ActionColumn',
                     'template' => '{view}<br>{update}<br>{delete}'

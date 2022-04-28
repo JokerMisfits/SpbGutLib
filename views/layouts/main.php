@@ -9,7 +9,8 @@ use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
 use app\assets\AppAsset;
 
-AppAsset::register($this);
+    AppAsset::register($this);
+
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
@@ -41,33 +42,45 @@ AppAsset::register($this);
             'class' => 'navbar-inverse navbar-fixed-top',
         ],
     ]);
+    $name = '';
+    if(Yii::$app->user->isGuest){
+        $bool = true;
+    }
+    else{
+        $bool = false;
+        $name = Yii::$app->user->identity->name;
+    }
+    $access = true;
+    if(isset(Yii::$app->user->identity->access_level) && Yii::$app->user->identity->access_level >= 50){
+        $access = false;
+    }
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],
         'items' => [
             ['label' => 'Главная', 'url' => ['/']],
-            Yii::$app->user->identity->access_level < 50 ? (
+            $bool ? (
             ''
             ) : (
             ['label' => 'Обновления', 'url' => ['/update']]
             ),
-            Yii::$app->user->identity->access_level < 50 ? (
+            $access ? (
             ''
             ) : (
             ['label' => 'Инструкции', 'url' => ['/about']]
             ),
-            Yii::$app->user->isGuest ? (
+            $bool ? (
                 ''
             ) : (
               ['label' => 'Профиль', 'url' => ['/admin']]
             ),
             ['label' => 'Обратная связь', 'url' => ['/contact']],
-            Yii::$app->user->isGuest ? (
+            $bool ? (
                 ['label' => 'Войти', 'url' => ['/login']]
             ) : (
                 '<li>'
                 . Html::beginForm(['/site/logout'], 'post')
                 . Html::submitButton(
-                    'Выйти (' . Yii::$app->user->identity->name . ')',
+                    'Выйти (' . $name . ')',
                     ['class' => 'btn btn-link logout']
                 )
                 . Html::endForm()

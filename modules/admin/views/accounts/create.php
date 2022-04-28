@@ -7,14 +7,11 @@ use yii\helpers\Html;
 /* @var $depart */
 /* @var $level */
 
-$this->title = 'Регистрация пользователя';
+    $this->title = 'Регистрация пользователя';
+
 ?>
 
-<style>
-    body{
-        margin-top: 50px;
-    }
-</style>
+<style>body{margin-top: 50px;}</style>
 
 <div class="accounts-create">
 

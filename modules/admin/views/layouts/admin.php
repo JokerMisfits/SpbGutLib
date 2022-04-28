@@ -10,9 +10,15 @@ use yii\bootstrap\NavBar;
 use app\assets\AppAsset;
 use yii\helpers\Url;
 
-AppAsset::register($this);
-$this->registerCssFile("@web/css/admin.css");
-$this->title = 'Профиль';
+    AppAsset::register($this);
+    $this->registerCssFile("@web/css/admin.css");
+    $this->title = 'Профиль';
+
+    $access = 0;
+    if(isset(Yii::$app->user->identity->access_level)){
+        $access = Yii::$app->user->identity->access_level;
+    }
+
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
@@ -61,24 +67,24 @@ $this->title = 'Профиль';
             'items' => [
                 ['label' => 'Профиль', 'url' => Url::to('/admin')],
 
-                Yii::$app->user->identity->access_level < 50 ? ('') : (
+                $access < 50 ? ('') : (
                 [
                     'label' => 'Аккаунты',
                     'items' => [
-                        Yii::$app->user->identity->access_level == 100 ? (
+                        $access == 100 ? (
                         ['label' => 'Создать', 'url' => Url::to('/admin/accounts/create')]
                         )
                         :
                         (
                         ['label' => 'Просмотр', 'url' => Url::to('/admin/accounts')]
                         ),
-                        Yii::$app->user->identity->access_level == 100 ? (
+                        $access == 100 ? (
                         ['label' => 'Просмотр', 'url' => Url::to('/admin/accounts')]
                         ):(''),
                     ],
                 ]),
 
-                Yii::$app->user->identity->access_level < 50 ? ('') : (
+                $access < 50 ? ('') : (
                 [
                     'label' => 'Книги',
                     'items' => [
@@ -89,10 +95,10 @@ $this->title = 'Профиль';
                     ],
                 ]),
 
-                Yii::$app->user->identity->access_level < 50 ? (
+                $access < 50 ? (
                 ['label' => 'Книги', 'url' => Url::to('/admin/books')]) : (''),
 
-                Yii::$app->user->identity->access_level < 100 ? ('') : (
+                $access < 100 ? ('') : (
                 [
                     'label' => 'Кафедры',
                     'items' => [
@@ -101,7 +107,7 @@ $this->title = 'Профиль';
                     ],
                 ]),
 
-                Yii::$app->user->identity->access_level < 50 ? ('') : (
+                $access < 50 ? ('') : (
                 [
                     'label' => 'Пользователи',
                     'items' => [

@@ -7,14 +7,11 @@ use yii\helpers\Html;
 /* @var $books */
 /* @var $people */
 
-$this->title = 'Добавить запись';
+    $this->title = 'Добавить запись';
+
 ?>
 
-<style>
-    body{
-        margin-top: 50px;
-    }
-</style>
+<style>body{margin-top: 50px;}</style>
 
 <div class="books-history-create">
 

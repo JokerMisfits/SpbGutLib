@@ -102,7 +102,7 @@ class Books extends \yii\db\ActiveRecord
         ];
     }
 
-    public function beforeSave($insert){
+    public function beforeSave($insert) : bool{
         if (parent::beforeSave('beforeInsert')) {
             if($this->author != null){
                 $this->author = trim($this->author);

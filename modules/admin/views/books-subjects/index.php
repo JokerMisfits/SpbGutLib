@@ -7,14 +7,16 @@ use yii\grid\GridView;
 /* @var $searchModel app\modules\admin\models\BooksSubjectsSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Тематики';
+    $this->title = 'Тематики';
+
+    $access = 0;
+    if(isset(Yii::$app->user->identity->access_level)){
+        $access = Yii::$app->user->identity->access_level;
+    }
+
 ?>
 
-<style>
-    body{
-        margin-top: 50px;
-    }
-</style>
+<style>body{margin-top: 50px;}</style>
 
     <h1><?= Html::encode($this->title) ?></h1>
     <p>
@@ -31,12 +33,12 @@ $this->title = 'Тематики';
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
             'name',
-            Yii::$app->user->identity->access_level == 50 ? ([
+            $access == 50 ? ([
                 'class' => 'yii\grid\ActionColumn',
                 'template' => '{update}',
             ]
             ):(
-            Yii::$app->user->identity->access_level == 100 ? (
+            $access == 100 ? (
             [
                 'class' => 'yii\grid\ActionColumn',
                 'template' => '{update}<br>{delete}'

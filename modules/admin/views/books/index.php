@@ -11,7 +11,21 @@ use yii\helpers\Url;
 /* @var $categories app\modules\admin\models\BooksCategories */
 /* @var $subjects app\modules\admin\models\BooksSubjects */
 
-$this->title = 'Книги';
+    $this->title = 'Книги';
+
+    $access = 0;
+    $template = '{view}';
+
+    if(isset(Yii::$app->user->identity->access_level)){
+        $access = Yii::$app->user->identity->access_level;
+        if($access == 50){
+            $template = '{view}<br>{update}';
+        }
+        elseif($access == 100){
+            $template = '{view}<br>{update}<br>{delete}';
+        }
+    }
+
 ?>
 
 <style>
@@ -23,13 +37,14 @@ $this->title = 'Книги';
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?php if(Yii::$app->user->identity->access_level >= 50){echo Html::a('Добавить новую книгу', ['create'], ['class' => 'btn btn-success']);} ?>
+        <?php if($access >= 50){echo Html::a('Добавить новую книгу', ['create'], ['class' => 'btn btn-success']);} ?>
         <?= Html::a('Сбросить поиск', ['/admin/books'], ['class' => 'btn btn-primary']) ?>
     </p>
 
 <div class="books-index text-center">
 
-    <?
+    <?php
+
     try {
         echo GridView::widget([
             'dataProvider' => $dataProvider,
@@ -57,7 +72,7 @@ $this->title = 'Книги';
                     },
                     'filter' => Html::activeDropDownList($searchModel, 'subject_id', ArrayHelper::map($subjects::find()->select('name,id')->orderBy(['name' => SORT_ASC])->asArray()->all(), 'id', 'name'),['class'=>'form-control','prompt' => 'Выберете тематику']),
                 ],
-                Yii::$app->user->identity->access_level < 50 ? (
+                $access < 50 ? (
                 [
                         'attribute' => 'stock',
                         'value' => function ($data){
@@ -76,7 +91,7 @@ $this->title = 'Книги';
                 ) : (
                     'count'
                 ),
-                Yii::$app->user->identity->access_level >= 50 ? ([
+                $access >= 50 ? ([
                     'attribute' => 'rest',
                     'value' => function ($data){
                         return $data->rest;
@@ -90,15 +105,15 @@ $this->title = 'Книги';
                     'visible' => false,
                 ]),
 
-                Yii::$app->user->identity->access_level == 50 ? ([
+                $access <= 50 ? ([
                     'class' => 'yii\grid\ActionColumn',
-                    'template' => '{view}<br>{update}',
+                    'template' => $template,
                 ]
                 ):(
-                Yii::$app->user->identity->access_level == 100 ? (
+                $access == 100 ? (
                 [
                     'class' => 'yii\grid\ActionColumn',
-                    'template' => '{view}<br>{update}<br>{delete}'
+                    'template' => $template,
                 ]):([
                     'attribute' => 'rest',
                     'value' => function ($data){

@@ -8,15 +8,17 @@ use yii\helpers\Url;
 /* @var $model app\modules\admin\models\BooksHistory */
 /* @var $book */
 
-$this->title = $book;
-\yii\web\YiiAsset::register($this);
+    $this->title = $book;
+    yii\web\YiiAsset::register($this);
+
+    $access = 0;
+    if(isset(Yii::$app->user->identity->access_level)){
+        $access = Yii::$app->user->identity->access_level;
+    }
+
 ?>
 
-<style>
-    body{
-        margin-top: 50px;
-    }
-</style>
+<style>body{margin-top: 50px;}</style>
 
 <div class="books-history-view">
 
@@ -25,10 +27,10 @@ $this->title = $book;
     <p>
         <?php
 
-        if(Yii::$app->user->identity->access_level == 50){
+        if($access == 50){
             echo Html::a('Редактировать данные', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
         }
-        elseif(Yii::$app->user->identity->access_level == 100){
+        elseif($access == 100){
             echo Html::a('Редактировать данные', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
             echo Html::a('Удалить запись', ['delete', 'id' => $model->id], [
                 'class' => 'btn btn-danger',

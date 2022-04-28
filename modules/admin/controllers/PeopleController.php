@@ -23,8 +23,7 @@ class PeopleController extends AppAdminController
     /**
      * {@inheritdoc}
      */
-    public function behaviors()
-    {
+    public function behaviors() : array{
         return [
             'verbs' => [
                 'class' => VerbFilter::className(),
@@ -50,10 +49,11 @@ class PeopleController extends AppAdminController
      */
     public function actionIndex()// Доступ модератор и выше
     {
-        if (Yii::$app->user->identity->access_level < 50) {
+        if(!isset(Yii::$app->user->identity->access_level) || Yii::$app->user->identity->access_level < 50){
             $this->AccessDenied();
             return $this->goHome();
         }
+
         $searchModel = new PeopleSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         $access = new AccessLevel();
@@ -73,9 +73,9 @@ class PeopleController extends AppAdminController
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionView($id)// Доступ модератор и выше
+    public function actionView($id)
     {
-        if (Yii::$app->user->identity->access_level < 50) {
+        if(!isset(Yii::$app->user->identity->access_level) || Yii::$app->user->identity->access_level < 50){
             $this->AccessDenied();
             return $this->goHome();
         }
@@ -90,12 +90,13 @@ class PeopleController extends AppAdminController
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreate()// Доступ модератор и выше
+    public function actionCreate()
     {
-        if (Yii::$app->user->identity->access_level < 50) {
+        if(!isset(Yii::$app->user->identity->access_level) || Yii::$app->user->identity->access_level < 50){
             $this->AccessDenied();
             return $this->goHome();
         }
+
         $model = new People();
         if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
             Yii::$app->response->format = Response::FORMAT_JSON;
@@ -147,12 +148,13 @@ class PeopleController extends AppAdminController
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionUpdate($id)// Доступ администратор и выше
+    public function actionUpdate($id)
     {
-        if(Yii::$app->user->identity->access_level < 50) {
+        if(!isset(Yii::$app->user->identity->access_level) || Yii::$app->user->identity->access_level < 50){
             $this->AccessDenied();
             return $this->goHome();
         }
+
         $model = $this->findModel($id);
         if(Yii::$app->user->identity->access_level == 50){
             if(Yii::$app->user->identity->access_level == $model->access_level && Yii::$app->user->identity->id != $model->child_id){
@@ -259,10 +261,11 @@ class PeopleController extends AppAdminController
      */
     public function actionDelete($id)// Доступ администратор и выше
     {
-        if (Yii::$app->user->identity->access_level < 100) {
+        if(!isset(Yii::$app->user->identity->access_level) || Yii::$app->user->identity->access_level < 100){
             $this->AccessDenied();
             return $this->goHome();
         }
+
         $model = $this->findModel($id);
         if(Yii::$app->user->identity->id == $model->child_id){
             Yii::$app->getSession()->setFlash('error', 'Нельзя удалить самого себя!');

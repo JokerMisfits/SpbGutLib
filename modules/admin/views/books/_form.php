@@ -9,13 +9,10 @@ use yii\helpers\Url;
 /* @var $form yii\widgets\ActiveForm */
 /* @var $categories */
 /* @var $subjects */
+
 ?>
 
-<style>
-    body{
-        margin-top: 50px;
-    }
-</style>
+<style>body{margin-top: 50px;}</style>
 
 <div class="books-form">
 
@@ -31,7 +28,8 @@ use yii\helpers\Url;
 
     <!--  FORM FOR CREATE AND UPDATE  -->
 
-    <?
+    <?php
+
     if((Yii::$app->controller->action->id == 'create' || Yii::$app->controller->action->id == 'update') && (isset(Yii::$app->user->identity->access_level) && (Yii::$app->user->identity->access_level >= 50))) {
         echo $form->field($model, 'name',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textarea(['rows' => 1, 'placeholder' => 'Введите название']);
         echo $form->field($model, 'author',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textarea(['rows' => 2, 'placeholder' => 'Введите авторов']);
@@ -45,8 +43,14 @@ use yii\helpers\Url;
         echo $form->field($model, 'subject_id',['enableAjaxValidation' => true, 'enableClientValidation' => false])->dropDownList($subjects,['prompt' => 'Выберите тематику']);
         echo $form->field($model, 'annotation',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textarea(['rows' => 5, 'placeholder' => 'Введите аннотацию']);
         echo $form->field($model, 'comment',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textarea(['rows' => 2, 'placeholder' => 'Введите комментарий']);
-        echo $form->field($model, 'count',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textInput(['placeholder' => 'Введите количество книг', 'value' => 1]);
+        if(Yii::$app->controller->action->id == 'create'){
+            echo $form->field($model, 'count',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textInput(['placeholder' => 'Введите количество книг', 'value' => 1]);
+        }
+        elseif(Yii::$app->controller->action->id == 'update'){
+            echo $form->field($model, 'count',['enableAjaxValidation' => true, 'enableClientValidation' => false])->textInput(['placeholder' => 'Введите количество книг']);
+        }
     }
+
     ?>
 
     <!--  FORM FOR CREATE AND UPDATE END  -->

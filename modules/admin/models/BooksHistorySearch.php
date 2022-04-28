@@ -13,8 +13,7 @@ class BooksHistorySearch extends BooksHistory
     /**
      * {@inheritdoc}
      */
-    public function rules()
-    {
+    public function rules() : array{
         return [
             [['id', 'book_id', 'user_id', 'active'], 'integer'],
             ['count', 'integer', 'min' => 0],
@@ -28,8 +27,7 @@ class BooksHistorySearch extends BooksHistory
     /**
      * {@inheritdoc}
      */
-    public function scenarios()
-    {
+    public function scenarios() : array{
         // bypass scenarios() implementation in the parent class
         return Model::scenarios();
     }
@@ -41,7 +39,7 @@ class BooksHistorySearch extends BooksHistory
      *
      * @return ActiveDataProvider
      */
-    public function search($params)
+    public function search(array $params) : ActiveDataProvider
     {
         $query = BooksHistory::find();
 

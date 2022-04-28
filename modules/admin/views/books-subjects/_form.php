@@ -7,13 +7,10 @@ use yii\helpers\Url;
 /* @var $this yii\web\View */
 /* @var $model app\modules\admin\models\BooksSubjects */
 /* @var $form yii\widgets\ActiveForm */
+
 ?>
 
-<style>
-    body{
-        margin-top: 50px;
-    }
-</style>
+<style>body{margin-top: 50px;}</style>
 
 <div class="books-subjects-form">
 

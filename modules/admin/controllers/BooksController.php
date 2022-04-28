@@ -22,8 +22,7 @@ class BooksController extends AppAdminController
     /**
      * {@inheritdoc}
      */
-    public function behaviors()
-    {
+    public function behaviors() : array{
         return [
             'verbs' => [
                 'class' => VerbFilter::className(),
@@ -50,7 +49,7 @@ class BooksController extends AppAdminController
     public function actionIndex()
     {
 
-        if(Yii::$app->user->isGuest == true){
+        if(Yii::$app->user->isGuest){
             $this->AccessDenied();
             return $this->goHome();
         }
@@ -76,7 +75,7 @@ class BooksController extends AppAdminController
      */
     public function actionView($id)
     {
-        if(Yii::$app->user->isGuest == true){
+        if(Yii::$app->user->isGuest){
             $this->AccessDenied();
             return $this->goHome();
         }
@@ -93,10 +92,11 @@ class BooksController extends AppAdminController
      */
     public function actionCreate()
     {
-        if (Yii::$app->user->identity->access_level < 50) {
+        if(!isset(Yii::$app->user->identity->access_level) || Yii::$app->user->identity->access_level < 50){
             $this->AccessDenied();
             return $this->goHome();
         }
+
         $model = new Books();
         $model->scenario = Books::SCENARIO_CREATE;
         if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
@@ -174,10 +174,11 @@ class BooksController extends AppAdminController
      */
     public function actionUpdate($id)
     {
-        if (Yii::$app->user->identity->access_level < 50) {
+        if(!isset(Yii::$app->user->identity->access_level) || Yii::$app->user->identity->access_level < 50){
             $this->AccessDenied();
             return $this->goHome();
         }
+
         $model = $this->findModel($id);
         $model->scenario = Books::SCENARIO_UPDATE;
         if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
@@ -342,7 +343,7 @@ class BooksController extends AppAdminController
      */
     public function actionDelete($id)
     {
-        if (Yii::$app->user->identity->access_level < 100) {
+        if(!isset(Yii::$app->user->identity->access_level) || Yii::$app->user->identity->access_level < 100){
             $this->AccessDenied();
             return $this->goHome();
         }

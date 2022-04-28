@@ -13,16 +13,14 @@ class BooksCategories extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
-    {
+    public static function tableName() : string{
         return 'books_categories';
     }
 
     /**
      * {@inheritdoc}
      */
-    public function rules()
-    {
+    public function rules() : array{
         return [
             ['name', 'required'],
             ['name', 'string', 'max' => 255],
@@ -34,8 +32,7 @@ class BooksCategories extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
-    {
+    public function attributeLabels() : array{
         return [
             'id' => 'ID',
             'name' => 'Название',

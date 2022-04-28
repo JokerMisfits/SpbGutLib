@@ -21,8 +21,7 @@ class BooksHistoryController extends AppAdminController
     /**
      * {@inheritdoc}
      */
-    public function behaviors()
-    {
+    public function behaviors() : array{
         return [
             'verbs' => [
                 'class' => VerbFilter::className(),
@@ -52,10 +51,12 @@ class BooksHistoryController extends AppAdminController
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         $book = new Books();
         $active = new BooksHistory();
-        if (Yii::$app->user->identity->access_level < 50) {
+
+        if(!isset(Yii::$app->user->identity->access_level) || Yii::$app->user->identity->access_level < 50){
             $this->AccessDenied();
             return $this->goHome();
         }
+
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -73,10 +74,11 @@ class BooksHistoryController extends AppAdminController
      */
     public function actionView($id)
     {
-        if (Yii::$app->user->identity->access_level < 50) {
+        if(!isset(Yii::$app->user->identity->access_level) || Yii::$app->user->identity->access_level < 50){
             $this->AccessDenied();
             return $this->goHome();
         }
+
         $model = $this->findModel($id);
         $book = $this->getBook($model->book_id);
         return $this->render('view', [
@@ -93,10 +95,11 @@ class BooksHistoryController extends AppAdminController
     public function actionCreate()
     {
         $model = new BooksHistory();
-        if (Yii::$app->user->identity->access_level < 50) {
+        if(!isset(Yii::$app->user->identity->access_level) || Yii::$app->user->identity->access_level < 50){
             $this->AccessDenied();
             return $this->goHome();
         }
+
         if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
             Yii::$app->response->format = Response::FORMAT_JSON;
             return ActiveForm::validate($model);
@@ -196,10 +199,11 @@ class BooksHistoryController extends AppAdminController
      */
     public function actionUpdate($id)
     {
-        if (Yii::$app->user->identity->access_level < 50) {
+        if(!isset(Yii::$app->user->identity->access_level) || Yii::$app->user->identity->access_level < 50){
             $this->AccessDenied();
             return $this->goHome();
         }
+
         $model = $this->findModel($id);
         if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
             Yii::$app->response->format = Response::FORMAT_JSON;
@@ -258,10 +262,11 @@ class BooksHistoryController extends AppAdminController
      */
     public function actionDelete($id)
     {
-        if (Yii::$app->user->identity->access_level < 100) {
+        if(!isset(Yii::$app->user->identity->access_level) || Yii::$app->user->identity->access_level < 100){
             $this->AccessDenied();
             return $this->goHome();
         }
+
         $model = $this->findModel($id);
         if($model->active == 1){
             Yii::$app->getSession()->setFlash('error','Нельзя удалять активную запись!');
@@ -295,10 +300,11 @@ class BooksHistoryController extends AppAdminController
      * @throws NotFoundHttpException if the model cannot be found
      */
     public function actionClose($id){
-        if (Yii::$app->user->identity->access_level < 50) {
+        if(!isset(Yii::$app->user->identity->access_level) || Yii::$app->user->identity->access_level < 50){
             $this->AccessDenied();
             return $this->goHome();
         }
+
         $db = Yii::$app->db;
         $model = $this->findModel($id);
         $user_id = $model->user_id;
@@ -350,10 +356,11 @@ class BooksHistoryController extends AppAdminController
     }
 
     public function actionActive(){
-        if (Yii::$app->user->identity->access_level < 100) {
+        if(!isset(Yii::$app->user->identity->access_level) || Yii::$app->user->identity->access_level < 100){
             $this->AccessDenied();
             return $this->goHome();
         }
+
         if(Yii::$app->request->post()){
             try {
                 $count = BooksHistory::find()
